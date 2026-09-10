@@ -1,0 +1,90 @@
+.product-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.2s ease;
+}
+
+.product-card:hover {
+  border-color: var(--ink-soft);
+  box-shadow: 0 10px 24px rgba(20, 21, 28, 0.08);
+}
+
+.product-card .placeholder {
+  aspect-ratio: 1 / 1;
+  border-radius: 0;
+}
+
+.product-card .badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.product-card .wishlist-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  transition: transform 0.1s ease;
+}
+
+.product-card .wishlist-btn:hover {
+  transform: scale(1.1);
+}
+
+.product-card .wishlist-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.product-card .wishlist-btn.active {
+  color: var(--primary);
+}
+
+.product-card .stars {
+  font-size: 0.7rem;
+  margin-top: 3px;
+}
+
+.product-card .info {
+  padding: 12px 13px;
+}
+
+.product-card .name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.product-card .name:hover {
+  text-decoration: underline;
+}
+
+.product-card .price {
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-top: 3px;
+}
