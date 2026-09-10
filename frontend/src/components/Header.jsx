@@ -1,0 +1,93 @@
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import './Header.css'
+
+const TOPBAR_HEIGHT = 38
+
+function Header() {
+  const { pathname } = useLocation()
+  const overlay = pathname === '/'
+  const headerRef = useRef(null)
+  const [pinned, setPinned] = useState(false)
+
+  useEffect(() => {
+    if (!overlay) return
+
+    let ticking = false
+
+    function applyScrollState() {
+      const scrollTop = window.scrollY
+      const header = headerRef.current
+      if (scrollTop > TOPBAR_HEIGHT) {
+        setPinned(true)
+        if (header) header.style.top = '0px'
+      } else {
+        setPinned(false)
+        if (header) header.style.top = `${TOPBAR_HEIGHT - scrollTop}px`
+      }
+      ticking = false
+    }
+
+    function onScroll() {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(applyScrollState)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    applyScrollState()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [overlay])
+
+  const headerClassName = overlay
+    ? `site-header site-header--overlay${pinned ? ' is-pinned' : ''}`
+    : 'site-header'
+
+  return (
+    <>
+      <div className="topbar">
+        <div className="topbar-inner">
+          <span className="topbar-message">Envío gratis en compras desde $300.000</span>
+          <div className="topbar-links">
+            <Link to="/info/faq">Ayuda</Link>
+            <a href="#">ES</a>
+            <a href="#">COP</a>
+          </div>
+        </div>
+      </div>
+
+      <header ref={overlay ? headerRef : null} className={headerClassName}>
+        <Link to="/" className="site-logo">andanza<span>.</span></Link>
+        <nav className="site-nav">
+          <NavLink to="/" end>Inicio</NavLink>
+          <NavLink to="/catalog">Catálogo</NavLink>
+          <NavLink to="/info/about">Información</NavLink>
+        </nav>
+        <form className="site-search" role="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.3-4.3" />
+          </svg>
+          <input type="search" placeholder="Buscar zapatos..." aria-label="Buscar zapatos" />
+        </form>
+        <div className="site-icons">
+          <Link to="/account/profile" className="icon-btn" aria-label="Mi cuenta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+            </svg>
+          </Link>
+          <Link to="/cart" className="icon-btn" aria-label="Carrito, 3 productos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M4 7h16l-1.5 11a2 2 0 0 1-2 2H7.5a2 2 0 0 1-2-2L4 7Z" />
+              <path d="M8 7V6a4 4 0 0 1 8 0v1" />
+            </svg>
+            <span className="cart-badge">3</span>
+          </Link>
+        </div>
+      </header>
+    </>
+  )
+}
+
+export default Header
