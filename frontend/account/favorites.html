@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis favoritos — Andanza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/pages/account.css">
+<script defer src="/js/components.js"></script>
+<script defer src="/js/pages/account.js"></script>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true"><symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 2.5 14.7 9 21.5 9.6 16.4 14.1 17.9 20.8 12 17.2 6.1 20.8 7.6 14.1 2.5 9.6 9.3 9Z"/></symbol></svg>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-message">Envío gratis en compras desde $300.000</span>
+    <div class="topbar-links">
+      <a href="/info/faq.html">Ayuda</a>
+      <a href="#">ES</a>
+      <a href="#">COP</a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <a href="/index.html" class="site-logo">andanza<span>.</span></a>
+  <nav class="site-nav">
+    <a href="/index.html">Inicio</a>
+    <a href="/catalog.html">Catálogo</a>
+    <a href="/info/about.html">Información</a>
+  </nav>
+  <form class="site-search" role="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="search" placeholder="Buscar zapatos..." aria-label="Buscar zapatos">
+  </form>
+  <div class="site-icons">
+    <a href="/account/profile.html" class="icon-btn" aria-label="Mi cuenta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+    </a>
+    <a href="/cart.html" class="icon-btn" aria-label="Carrito, 3 productos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16l-1.5 11a2 2 0 0 1-2 2H7.5a2 2 0 0 1-2-2L4 7Z"/><path d="M8 7V6a4 4 0 0 1 8 0v1"/></svg>
+      <span class="cart-badge">3</span>
+    </a>
+  </div>
+</header>
+
+<main class="account-body">
+  <aside class="account-sidebar">
+    <div class="account-profile">
+      <div class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div>
+      <div>
+        <div class="name">Juan Pérez</div>
+        <div class="email">juanperez@email.com</div>
+      </div>
+    </div>
+    <ul class="account-menu">
+      <li><a href="/account/profile.html">Mis datos personales <span aria-hidden="true">›</span></a></li>
+      <li><a href="/account/addresses.html">Mis direcciones <span aria-hidden="true">›</span></a></li>
+      <li><a href="/account/favorites.html" class="active">Mis favoritos <span class="mono">(3) ›</span></a></li>
+      <li><a href="/account/comments.html">Mis comentarios <span class="mono">(2) ›</span></a></li>
+      <li><a href="/account/orders.html">Mis pedidos <span aria-hidden="true">›</span></a></li>
+      <li><a href="/account/change-password.html">Cambiar contraseña <span aria-hidden="true">›</span></a></li>
+      <li><a href="#" class="logout">Cerrar sesión <span aria-hidden="true">›</span></a></li>
+    </ul>
+  </aside>
+
+  <div class="account-content">
+    <h1>Mis favoritos</h1>
+    <div class="favorites-grid">
+      <article class="product-card">
+        <a href="/product-detail.html" class="placeholder"><span>[imagen]</span></a>
+        <button class="wishlist-btn active" aria-label="Quitar de favoritos"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.36l-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 9.61 3 11.34L12 20l9-8.66c1.67-1.73 1.54-4.64-.58-6.76Z"/></svg></button>
+        <div class="info">
+          <a href="/product-detail.html" class="name">Tenis Revolution Negro</a>
+          <div class="stars" aria-label="5 de 5 estrellas"><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg></div>
+          <div class="price">$289.900</div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="/product-detail.html" class="placeholder"><span>[imagen]</span></a>
+        <button class="wishlist-btn active" aria-label="Quitar de favoritos"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.36l-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 9.61 3 11.34L12 20l9-8.66c1.67-1.73 1.54-4.64-.58-6.76Z"/></svg></button>
+        <div class="info">
+          <a href="/product-detail.html" class="name">Bota 6-Inch Trigo</a>
+          <div class="stars" aria-label="5 de 5 estrellas"><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg></div>
+          <div class="price">$459.900</div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="/product-detail.html" class="placeholder"><span>[imagen]</span></a>
+        <button class="wishlist-btn active" aria-label="Quitar de favoritos"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.36l-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 9.61 3 11.34L12 20l9-8.66c1.67-1.73 1.54-4.64-.58-6.76Z"/></svg></button>
+        <div class="info">
+          <a href="/product-detail.html" class="name">Zapato Oxford Café</a>
+          <div class="stars" aria-label="5 de 5 estrellas"><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg><svg class="star-icon" aria-hidden="true"><use href="#icon-star"></use></svg></div>
+          <div class="price">$389.900</div>
+        </div>
+      </article>
+    </div>
+    <div class="empty-state" id="favorites-empty" hidden>
+      <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.36l-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 9.61 3 11.34L12 20l9-8.66c1.67-1.73 1.54-4.64-.58-6.76Z"/></svg></div>
+      <p class="empty-state-title">Todavía no tienes favoritos</p>
+      <p class="empty-state-text">Guarda los productos que te gusten para encontrarlos rápido después.</p>
+      <a href="/catalog.html" class="btn btn-fill">Explorar catálogo</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="cols">
+    <div class="col" style="flex:1.4;">
+      <div class="f-logo">andanza<span>.</span></div>
+      <p class="blurb">Calzado de varias marcas reunido en un solo lugar, para cada ruta que decidas tomar.</p>
+      <div class="social-row">
+        <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+        <a href="#" class="social-link" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="social-link" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      </div>
+    </div>
+    <div class="col">
+      <h5>Compañía</h5>
+      <div><a href="/info/about.html">Sobre nosotros</a></div>
+      <div><a href="/info/contact.html">Contacto</a></div>
+      <div><a href="/info/faq.html">Preguntas frecuentes</a></div>
+    </div>
+    <div class="col">
+      <h5>Ayuda</h5>
+      <div><a href="/info/shipping.html">Envíos</a></div>
+      <div><a href="/info/returns.html">Cambios y devoluciones</a></div>
+      <div><a href="/info/size-guide.html">Guía de tallas</a></div>
+    </div>
+    <div class="col">
+      <h5>Legal</h5>
+      <div><a href="/info/terms.html">Términos y condiciones</a></div>
+      <div><a href="/info/terms.html">Política de privacidad</a></div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="bottom-info">
+      <span>© 2026 Andanza</span>
+      <span>Barranquilla, Colombia</span>
+    </div>
+    <div class="payment-methods">
+      <span class="payment-badge">Visa</span>
+      <span class="payment-badge">Mastercard</span>
+      <span class="payment-badge">PSE</span>
+      <span class="payment-badge">Contraentrega</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
