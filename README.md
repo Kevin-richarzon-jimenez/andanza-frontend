@@ -1,16 +1,8 @@
-# Andanza
+# Andanza — Frontend
 
 E-commerce de calzado. Proyecto de Sena.
 
-## Estructura
-
-```
-andanza/
-├── frontend/     React + Vite (SPA)
-└── backend/      (se agrega cuando arranque Spring Boot)
-```
-
-`frontend/` y `backend/` son proyectos independientes que se comunican solo por API — no comparten código. Por ahora solo existe `frontend/`.
+Repo poly-repo: este es el frontend. El backend (Spring Boot) vive aparte, en [andanza-backend](https://github.com/Kevin-richarzon-jimenez/andaza-back) — se comunican solo por API, no comparten código ni repo.
 
 ## Frontend
 
@@ -20,7 +12,6 @@ Aplicación de una sola página (SPA) construida con React 18 + Vite + React Rou
 
 **Correr en desarrollo:**
 ```
-cd frontend
 npm install
 npm run dev
 ```
@@ -41,6 +32,5 @@ Genera una carpeta `dist/` con archivos estáticos listos para desplegar (no nec
 
 ## Roadmap
 
-- Backend: Spring Boot (Maven), conectado a Postgres (Supabase) vía JDBC/Spring Data JPA.
-- Conectar el frontend a la API real (por ahora todos los datos son de ejemplo, en memoria).
-- Deploy: frontend a Vercel, backend a un host con soporte para Java (Render/Railway).
+- Conectar el frontend a la API real del backend (por ahora todos los datos son de ejemplo, en memoria).
+- Deploy: Vercel.
