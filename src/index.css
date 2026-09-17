@@ -40,6 +40,12 @@ body {
   line-height: 1.4;
 }
 
+/* React monta todo dentro de #root — sin esto, ese div extra rompe la
+   cadena flex de body y el footer deja de pegarse abajo en páginas cortas. */
+#root {
+  display: contents;
+}
+
 /* flex:1 0 auto pins the footer to the bottom on short pages. */
 main {
   flex: 1 0 auto;
