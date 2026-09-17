@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import EmptyState from '../../components/EmptyState.jsx'
 import '../account-shared.css'
 
