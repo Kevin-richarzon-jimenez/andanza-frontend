@@ -6,9 +6,9 @@ Repo poly-repo: este es el frontend. El backend (Spring Boot) vive aparte, en [a
 
 ## Frontend
 
-Aplicación de una sola página (SPA) construida con React 18 + Vite + React Router. Cubre el flujo completo de usuario (inicio, catálogo, detalle de producto, carrito, autenticación, cuenta y páginas de información), sin conexión a backend todavía.
+Aplicación de una sola página (SPA) construida con React 19 + Vite 5 + React Router 6. Cubre el flujo completo de usuario (inicio, catálogo, detalle de producto, carrito, autenticación, cuenta y páginas de información), sin conexión a backend todavía.
 
-**Requisitos:** Node 20+.
+**Requisitos:** Node 24 (LTS). Verificar con `node -v` -- si tenés una versión más vieja, actualizala antes de instalar (`npm install` puede fallar o instalar versiones de paquetes que no corresponden).
 
 **Correr en desarrollo:**
 ```
@@ -21,6 +21,11 @@ npm run dev
 npm run build
 ```
 Genera una carpeta `dist/` con archivos estáticos listos para desplegar (no necesita Node en producción).
+
+**Revisar estilo de código:**
+```
+npm run lint
+```
 
 ### Estructura de `src/`
 
