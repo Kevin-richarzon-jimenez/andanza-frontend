@@ -1,0 +1,36 @@
+.error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 32px;
+}
+
+.error-code {
+  font-family: 'Space Mono', monospace;
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--line);
+  margin: 0;
+  line-height: 1;
+}
+
+.error-page h1 {
+  font-size: var(--text-page-lg);
+  margin-top: 8px;
+  max-width: 20ch;
+}
+
+.error-message {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  max-width: 50ch;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
