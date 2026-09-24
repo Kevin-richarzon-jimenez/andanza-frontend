@@ -2,7 +2,9 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import AccountLayout from './components/AccountLayout.jsx'
 import AuthLayout from './components/AuthLayout.jsx'
+import AdminLayout from './components/AdminLayout.jsx'
 import RequireAuth from './auth/RequireAuth.jsx'
+import RequireAdmin from './auth/RequireAdmin.jsx'
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
@@ -16,6 +18,14 @@ import Favorites from './pages/account/Favorites.jsx'
 import Comments from './pages/account/Comments.jsx'
 import Orders from './pages/account/Orders.jsx'
 import ChangePassword from './pages/account/ChangePassword.jsx'
+
+import Dashboard from './pages/admin/Dashboard.jsx'
+import AdminProducts from './pages/admin/Products.jsx'
+import ProductForm from './pages/admin/ProductForm.jsx'
+import Categories from './pages/admin/Categories.jsx'
+import AdminComments from './pages/admin/Comments.jsx'
+import Users from './pages/admin/Users.jsx'
+import Messages from './pages/admin/Messages.jsx'
 
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
@@ -47,6 +57,17 @@ function App() {
           <Route path="comments" element={<Comments />} />
           <Route path="orders" element={<Orders />} />
           <Route path="change-password" element={<ChangePassword />} />
+        </Route>
+
+        <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
+          <Route index element={<Dashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<ProductForm />} />
+          <Route path="products/:id/edit" element={<ProductForm />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="comments" element={<AdminComments />} />
+          <Route path="users" element={<Users />} />
+          <Route path="messages" element={<Messages />} />
         </Route>
 
         <Route path="/info/about" element={<About />} />
