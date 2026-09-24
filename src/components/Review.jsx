@@ -1,8 +1,11 @@
-function Review({ author, rating, text, date }) {
+function Review({ author, rating, text, date, isNew = false }) {
   return (
-    <div className="comment-row">
+    <div className={isNew ? 'comment-row is-new' : 'comment-row'}>
       <div className="comment-top">
-        <span className="comment-author">{author}</span>
+        <span className="comment-author">
+          {author}
+          {isNew && <span className="comment-own-tag">Tu comentario</span>}
+        </span>
         <span className="comment-stars" aria-label={`${rating} de 5 estrellas`}>
           {Array.from({ length: 5 }, (_, i) => (
             <svg key={i} className={i < rating ? 'star-icon' : 'star-icon empty'} viewBox="0 0 24 24" aria-hidden="true">
