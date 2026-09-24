@@ -58,6 +58,9 @@ function AccountLayout() {
           </li>
           <li><NavLink to="/account/orders">Mis pedidos <span aria-hidden="true">›</span></NavLink></li>
           <li><NavLink to="/account/change-password">Cambiar contraseña <span aria-hidden="true">›</span></NavLink></li>
+          {user?.role === 'ADMIN' && (
+            <li><NavLink to="/admin">Panel de administración <span aria-hidden="true">›</span></NavLink></li>
+          )}
           <li><button type="button" className="logout" onClick={handleLogout}>Cerrar sesión <span aria-hidden="true">›</span></button></li>
         </ul>
       </aside>

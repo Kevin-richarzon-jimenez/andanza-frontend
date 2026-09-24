@@ -165,16 +165,6 @@
   align-items: start;
 }
 
-.catalog-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 28px;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-}
-
 .catalog-search-note {
   padding-inline: max(var(--content-pad), calc((100% - var(--content-max)) / 2));
   color: var(--ink-soft);
