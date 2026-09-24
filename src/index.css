@@ -157,6 +157,29 @@ summary:focus-visible,
   padding: 8px 14px;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  padding: 4px 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.back-link:hover {
+  color: var(--ink);
+}
+
+.back-link svg {
+  width: 14px;
+  height: 14px;
+}
+
 .swatch {
   width: 20px;
   height: 20px;
@@ -255,24 +278,6 @@ summary:focus-visible,
   align-items: start;
 }
 
-.breadcrumb {
-  padding-top: 14px;
-  padding-inline: max(var(--content-pad), calc((100% - var(--content-max)) / 2));
-  font-size: 0.78rem;
-  color: var(--ink-soft);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.breadcrumb a {
-  color: var(--ink-soft);
-}
-
-.breadcrumb a:hover {
-  text-decoration: underline;
-}
-
 .comment-row {
   padding: 16px 0;
   border-bottom: 1px solid var(--line);
@@ -281,6 +286,35 @@ summary:focus-visible,
 
 .comment-row:last-child {
   border-bottom: none;
+}
+
+.comment-row.is-new {
+  padding-inline: 16px;
+  border-radius: 10px;
+  border-bottom-color: transparent;
+  animation: comment-highlight 3.5s ease-out;
+}
+
+@keyframes comment-highlight {
+  from { background: #E4F7EF; }
+  to { background: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comment-row.is-new {
+    animation: none;
+    background: #E4F7EF;
+  }
+}
+
+.comment-own-tag {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #E4F7EF;
+  color: var(--ok);
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .comment-top {
@@ -398,6 +432,28 @@ summary:focus-visible,
   margin-top: 12px;
 }
 
+.form-error {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-deep);
+  margin-top: 12px;
+}
+
+.field-error {
+  font-size: 0.75rem;
+  color: var(--primary-deep);
+  margin-top: 4px;
+}
+
+.form-notice {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  background: var(--bg-soft);
+  border-radius: 7px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -437,4 +493,15 @@ summary:focus-visible,
 
 .empty-state .btn {
   margin-top: 18px;
+}
+
+.page-status {
+  padding: 64px var(--content-pad);
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.page-status p {
+  margin-bottom: 14px;
 }

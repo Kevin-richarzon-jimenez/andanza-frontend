@@ -1,25 +1,42 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../auth/useAuth.js'
 
 function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(null)
 
-  function handleSubmit(event) {
+  const from = location.state?.from ?? '/'
+  const expired = location.state?.expired
+
+  async function handleSubmit(event) {
     event.preventDefault()
     const form = event.target
     if (!form.checkValidity()) {
       form.reportValidity()
       return
     }
+    const data = new FormData(form)
     setSubmitting(true)
-    navigate('/')
+    setError(null)
+    try {
+      await login({ email: data.get('email'), password: data.get('password') })
+      navigate(from, { replace: true })
+    } catch (err) {
+      setError(err.message)
+      setSubmitting(false)
+    }
   }
 
   return (
     <>
       <h1>Bienvenido de nuevo</h1>
       <p className="subtitle">Inicia sesión para ver tus favoritos, tus pedidos y tus direcciones guardadas.</p>
+
+      {expired && <p className="form-notice" role="status">Tu sesión expiró. Inicia sesión de nuevo para continuar.</p>}
 
       <form onSubmit={handleSubmit}>
         <div className="field-group">
@@ -34,11 +51,10 @@ function Login() {
         <button type="submit" className="btn btn-fill" disabled={submitting}>
           {submitting ? 'Ingresando...' : 'Iniciar sesión'}
         </button>
+        {error && <p className="form-error" role="alert">{error}</p>}
       </form>
 
-      <div className="auth-divider"><div className="line"></div>o<div className="line"></div></div>
-      <button type="button" className="btn btn-outline" style={{ width: '100%' }}>Continuar con Google</button>
-      <div className="auth-links">¿No tienes cuenta? <Link to="/auth/register">Regístrate</Link></div>
+      <div className="auth-links">¿No tienes cuenta? <Link to="/auth/register" state={{ from }}>Regístrate</Link></div>
     </>
   )
 }

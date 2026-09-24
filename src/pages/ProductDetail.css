@@ -1,3 +1,8 @@
+.back-bar {
+  padding-top: 14px;
+  padding-inline: max(var(--content-pad), calc((100% - var(--content-max)) / 2));
+}
+
 .product-body {
   display: flex;
   align-items: flex-start;
@@ -45,8 +50,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
   font-size: 0.85rem;
   margin-top: 8px;
+  cursor: pointer;
+}
+
+.product-rating:hover .review-count {
+  color: var(--ink);
+  text-decoration: underline;
 }
 
 .product-rating .stars {
@@ -103,81 +118,173 @@
   margin-top: 24px;
 }
 
+.product-actions .favorite-toggle {
+  gap: 8px;
+}
+
 .product-actions .favorite-toggle.active {
   color: var(--primary-deep);
   border-color: var(--primary);
 }
 
-.product-tabs {
+.product-perks {
   display: flex;
-  gap: 22px;
-  margin-top: 26px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 10px;
+  flex-direction: column;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 20px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
   font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.product-tabs button {
-  background: none;
-  border: none;
-  font: inherit;
-  padding: 0;
   color: var(--ink-soft);
-  transition: color 0.15s ease;
 }
 
-.product-tabs button:hover {
+.product-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.product-perks svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--ok);
+}
+
+.product-perks strong {
   color: var(--ink);
 }
 
-.product-tabs button.active,
-.product-tabs button.active:hover {
-  color: var(--primary-deep);
+.product-sections {
+  padding-inline: max(var(--content-pad), calc((100% - var(--content-max)) / 2));
+}
+
+.product-sections h2 {
+  font-size: 1.1rem;
+}
+
+.product-about,
+.reviews {
+  padding-block: 36px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 16px;
+}
+
+.product-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 56px;
 }
 
 .product-description {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--ink-soft);
   margin-top: 14px;
-  line-height: 1.6;
-  max-width: 60ch;
+  line-height: 1.7;
+  max-width: 62ch;
 }
 
-.detail-list {
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  line-height: 1.9;
-  margin-top: 14px;
-  padding-left: 18px;
-  max-width: 60ch;
+.product-details {
+  margin: 14px 0 0;
 }
 
-.detail-list strong {
-  color: var(--ink);
-}
-
-.reviews {
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 1px solid var(--line);
-}
-
-.reviews-header {
+.product-details > div {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
 }
 
-.reviews-header h2 {
-  font-size: 1rem;
+.product-details > div:first-child {
+  padding-top: 0;
+}
+
+.product-details dt {
+  flex: 0 0 90px;
+  color: var(--ink-soft);
+}
+
+.product-details dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.reviews-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 56px;
+  margin-top: 24px;
+}
+
+.reviews-layout.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.reviews-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.reviews-status {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.reviews-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 26px;
+  border-radius: 12px;
+  background: var(--bg-soft);
+}
+
+.reviews-empty p {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.review-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #E4F7EF;
+  font-size: 0.85rem;
+}
+
+.review-notice svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--ok);
+}
+
+.review-notice p {
+  margin: 2px 0 0;
+  color: var(--ink-soft);
 }
 
 .review-form {
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 18px;
-  margin-top: 18px;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 8px;
+}
+
+.review-counter {
+  margin-top: 4px;
+  text-align: right;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
 }
 
 .review-form .field-label:first-child {

@@ -1,0 +1,70 @@
+.review-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-average {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.review-average-value {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.review-average .stars {
+  font-size: 1.05rem;
+}
+
+.review-average-count {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.review-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-bars li {
+  display: grid;
+  grid-template-columns: 10px 12px 1fr 22px;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.review-bars svg {
+  width: 12px;
+  height: 12px;
+  fill: var(--casual);
+}
+
+.review-bar {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.review-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--casual);
+}
+
+.review-bar-count {
+  text-align: right;
+}

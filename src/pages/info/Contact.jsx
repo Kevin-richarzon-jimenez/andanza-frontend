@@ -1,13 +1,33 @@
 import { useState } from 'react'
+import { sendContactMessage } from '../../api/contact.js'
+import { describeError } from '../../utils/formErrors.js'
 import './info-shared.css'
 
-function Contact() {
-  const [submitted, setSubmitted] = useState(false)
+function FieldError({ message }) {
+  return message ? <div className="field-error" role="alert">{message}</div> : null
+}
 
-  function handleSubmit(event) {
+function Contact() {
+  const [status, setStatus] = useState({ type: 'idle', message: '', fields: {} })
+
+  async function handleSubmit(event) {
     event.preventDefault()
-    setSubmitted(true)
-    event.target.reset()
+    const form = event.target
+    const data = new FormData(form)
+    setStatus({ type: 'sending', message: '', fields: {} })
+    try {
+      const response = await sendContactMessage({
+        name: data.get('name'),
+        email: data.get('email'),
+        subject: data.get('subject'),
+        message: data.get('message'),
+      })
+      setStatus({ type: 'done', message: response.message, fields: {} })
+      form.reset()
+    } catch (err) {
+      const { message, fields } = describeError(err)
+      setStatus({ type: 'error', message, fields })
+    }
   }
 
   return (
@@ -15,13 +35,16 @@ function Contact() {
       <div className="contact-form">
         <h1>Escríbenos</h1>
         <form onSubmit={handleSubmit}>
-          <div className="field-group"><label htmlFor="name">Nombre</label><input type="text" id="name" name="name" required /></div>
-          <div className="field-group"><label htmlFor="email">Correo</label><input type="email" id="email" name="email" required /></div>
-          <div className="field-group"><label htmlFor="subject">Asunto</label><input type="text" id="subject" name="subject" required /></div>
-          <div className="field-group"><label htmlFor="message">Mensaje</label><textarea id="message" name="message" required></textarea></div>
-          <button type="submit" className="btn btn-fill" style={{ marginTop: 4 }}>Enviar mensaje</button>
-          {submitted && (
-            <p className="form-feedback">¡Mensaje enviado! Te responderemos pronto.</p>
+          <div className="field-group"><label htmlFor="name">Nombre</label><input type="text" id="name" name="name" required maxLength={100} /><FieldError message={status.fields.name} /></div>
+          <div className="field-group"><label htmlFor="email">Correo</label><input type="email" id="email" name="email" required /><FieldError message={status.fields.email} /></div>
+          <div className="field-group"><label htmlFor="subject">Asunto</label><input type="text" id="subject" name="subject" required maxLength={120} /><FieldError message={status.fields.subject} /></div>
+          <div className="field-group"><label htmlFor="message">Mensaje</label><textarea id="message" name="message" required minLength={10} maxLength={1000}></textarea><FieldError message={status.fields.message} /></div>
+          <button type="submit" className="btn btn-fill" style={{ marginTop: 4 }} disabled={status.type === 'sending'}>
+            {status.type === 'sending' ? 'Enviando...' : 'Enviar mensaje'}
+          </button>
+          {status.type === 'done' && <p className="form-feedback">{status.message}</p>}
+          {status.type === 'error' && !Object.keys(status.fields).length && (
+            <p className="form-error" role="alert">{status.message}</p>
           )}
         </form>
       </div>

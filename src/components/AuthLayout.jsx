@@ -1,10 +1,21 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import './AuthLayout.css'
 
 function AuthLayout() {
+  const from = useLocation().state?.from
+  // Las páginas de /account piden sesión: volver a ellas rebotaría otra vez al login.
+  const backTo = from && !from.startsWith('/account') ? from : '/'
+
   return (
     <main className="auth-split">
       <div className="auth-form">
+        <Link to={backTo} className="back-link auth-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5" />
+            <path d="m12 19-7-7 7-7" />
+          </svg>
+          Volver a la tienda
+        </Link>
         <Link to="/" className="site-logo">andanza<span>.</span></Link>
         <Outlet />
       </div>
