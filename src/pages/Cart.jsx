@@ -1,33 +1,48 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useCart } from '../cart/useCart.js'
+import { useConfirm } from '../confirm/useConfirm.js'
+import { useApiData } from '../hooks/useApiData.js'
+import { calculateTotals } from '../api/cart.js'
+import { formatCOP } from '../utils/formatCurrency.js'
 import './Cart.css'
 
-const initialItems = [
-  { id: 1, name: 'Tenis Revolution Negro', variant: 'Talla 40 · Negro', price: 289900, qty: 1 },
-  { id: 2, name: 'Zapato Oxford Café', variant: 'Talla 42 · Café', price: 389900, qty: 1 },
-  { id: 3, name: 'Bota 6-Inch Trigo', variant: 'Talla 41 · Óxido', price: 459900, qty: 1 },
-]
-
-function formatCOP(amount) {
-  return '$' + amount.toLocaleString('es-CO')
-}
-
 function Cart() {
-  const [items, setItems] = useState(initialItems)
+  const { items, setQuantity, remove, clear } = useCart()
+  const confirm = useConfirm()
 
-  function increase(id) {
-    setItems((current) => current.map((item) => (item.id === id ? { ...item, qty: item.qty + 1 } : item)))
-  }
-
-  function decrease(id) {
-    setItems((current) => {
-      const item = current.find((i) => i.id === id)
-      if (item.qty <= 1) return current.filter((i) => i.id !== id)
-      return current.map((i) => (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+  // Con una sola unidad, "−" quita el producto: se pide confirmar para que un doble clic rápido no lo borre.
+  async function handleDecrease(item) {
+    if (item.quantity > 1) {
+      setQuantity(item.variantId, item.quantity - 1)
+      return
+    }
+    const confirmed = await confirm({
+      title: '¿Quitar del carrito?',
+      message: `Se quitará ${item.name} (talla ${item.size}, ${item.color}).`,
+      confirmLabel: 'Quitar',
     })
+    if (confirmed) remove(item.variantId)
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0)
+  async function handleClear() {
+    const confirmed = await confirm({
+      title: '¿Vaciar el carrito?',
+      message: 'Se quitarán todos los productos de tu carrito.',
+      confirmLabel: 'Vaciar carrito',
+    })
+    if (confirmed) clear()
+  }
+
+  // El backend recalcula precio, stock, descuento y envío con lo que hay en el carrito.
+  const totalsKey = items.map((item) => `${item.variantId}x${item.quantity}`).join(',')
+  const { data: totals, error } = useApiData(
+    () => (items.length > 0
+      ? calculateTotals(items.map(({ variantId, quantity }) => ({ variantId, quantity })))
+      : Promise.resolve(null)),
+    `totals:${totalsKey}`,
+  )
+
+  const shipping = totals && (Number(totals.shipping) === 0 ? 'Gratis' : formatCOP(totals.shipping))
 
   return (
     <>
@@ -38,21 +53,21 @@ function Cart() {
             <p className="cart-empty">Tu carrito está vacío. <Link to="/catalog">Ver catálogo</Link></p>
           ) : (
             items.map((item) => (
-              <div className="cart-row" key={item.id}>
-                <Link to="/product-detail" className="placeholder"><span>[imagen]</span></Link>
+              <div className="cart-row" key={item.variantId}>
+                <Link to={`/products/${item.productId}`} className="placeholder"><span>[imagen]</span></Link>
                 <div className="item-info">
-                  <Link to="/product-detail" className="name">{item.name}</Link>
-                  <div className="variant">{item.variant}</div>
-                  <div className="price">{formatCOP(item.price * item.qty)}</div>
+                  <Link to={`/products/${item.productId}`} className="name">{item.name}</Link>
+                  <div className="variant">Talla {item.size} · {item.color}</div>
+                  {item.quantity > 1 && <div className="unit-price">{formatCOP(item.unitPrice)} c/u</div>}
                 </div>
                 <div className="quantity-stepper">
                   <button
                     type="button"
-                    className={item.qty <= 1 ? 'is-remove' : ''}
-                    aria-label={item.qty <= 1 ? 'Eliminar del carrito' : 'Disminuir cantidad'}
-                    onClick={() => decrease(item.id)}
+                    className={item.quantity <= 1 ? 'is-remove' : ''}
+                    aria-label={item.quantity <= 1 ? 'Eliminar del carrito' : 'Disminuir cantidad'}
+                    onClick={() => handleDecrease(item)}
                   >
-                    {item.qty <= 1 ? (
+                    {item.quantity <= 1 ? (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 6h18" />
                         <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
@@ -62,19 +77,30 @@ function Cart() {
                       </svg>
                     ) : '−'}
                   </button>
-                  <span className="quantity-value">{item.qty}</span>
-                  <button type="button" aria-label="Aumentar cantidad" onClick={() => increase(item.id)}>+</button>
+                  <span className="quantity-value">{item.quantity}</span>
+                  <button type="button" aria-label="Aumentar cantidad" onClick={() => setQuantity(item.variantId, item.quantity + 1)}>+</button>
                 </div>
+                <div className="line-total">{formatCOP(item.unitPrice * item.quantity)}</div>
               </div>
             ))
           )}
         </div>
 
         <aside className="cart-summary">
-          <div className="summary-row"><span>Subtotal</span><span>{formatCOP(subtotal)}</span></div>
-          <div className="summary-row"><span>Envío</span><span>Calculado al pagar</span></div>
-          <div className="summary-row total"><span>Total</span><span>{formatCOP(subtotal)}</span></div>
-          <button type="button" className="btn btn-fill">Finalizar compra</button>
+          <h2>Resumen del pedido</h2>
+          {error && (
+            <div role="alert">
+              <p className="form-error" style={{ marginTop: 0 }}>{error.message}</p>
+              {error.status === 422 && (
+                <button type="button" className="clear-cart" onClick={handleClear}>Vaciar carrito</button>
+              )}
+            </div>
+          )}
+          <div className="summary-row"><span>Subtotal</span><span>{totals ? formatCOP(totals.subtotal) : '—'}</span></div>
+          <div className="summary-row"><span>Envío</span><span>{shipping ?? '—'}</span></div>
+          <div className="summary-row total"><span>Total</span><span>{totals ? formatCOP(totals.total) : '—'}</span></div>
+          <button type="button" className="btn btn-fill" disabled>Finalizar compra</button>
+          <p className="cart-note">El pago en línea estará disponible pronto.</p>
         </aside>
       </main>
     </>

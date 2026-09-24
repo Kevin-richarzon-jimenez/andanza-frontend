@@ -39,13 +39,14 @@
 }
 
 .cart-row .placeholder {
-  width: 78px;
-  height: 66px;
+  width: 96px;
+  height: 84px;
   flex-shrink: 0;
 }
 
 .cart-row .item-info {
   flex: 1;
+  min-width: 0;
 }
 
 .cart-row .item-info .name {
@@ -57,62 +58,75 @@
   text-decoration: underline;
 }
 
-.cart-row .item-info .variant {
+.cart-row .item-info .variant,
+.cart-row .item-info .unit-price {
   font-size: 0.78rem;
   color: var(--ink-soft);
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
-.cart-row .item-info .price {
-  font-size: 0.9rem;
+.line-total {
+  flex: 0 0 110px;
+  text-align: right;
+  font-size: 0.95rem;
   font-weight: 800;
-  margin-top: 5px;
 }
 
 .quantity-stepper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
+  padding: 3px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
   font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .quantity-stepper button {
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: #fff;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 7px;
+  background: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .quantity-stepper button:hover {
-  border-color: var(--ink);
+  background: var(--bg-soft);
 }
 
 .quantity-stepper button svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
 }
 
 .quantity-stepper button.is-remove:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  background: #FFEAE6;
+  color: var(--primary-deep);
 }
 
 .quantity-value {
-  min-width: 1.2em;
+  min-width: 1.8em;
   text-align: center;
 }
 
 .cart-summary {
+  position: sticky;
+  top: 16px;
   flex: 0 0 300px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 22px;
   height: fit-content;
+}
+
+.cart-summary h2 {
+  margin-bottom: 16px;
+  font-size: 1rem;
 }
 
 .summary-row {
@@ -133,4 +147,25 @@
 .cart-summary .btn {
   width: 100%;
   margin-top: 14px;
+}
+
+.cart-note {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.clear-cart {
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: 12px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  text-decoration: underline;
+}
+
+.clear-cart:hover {
+  color: var(--ink);
 }
