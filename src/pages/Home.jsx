@@ -1,39 +1,27 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard.jsx'
-import SaleCard from '../components/SaleCard.jsx'
+import { useApiData } from '../hooks/useApiData.js'
+import { listCategories, listProducts } from '../api/catalog.js'
+import { subscribeToNewsletter } from '../api/contact.js'
 import './Home.css'
 
-const bestSellers = [
-  { name: 'Tenis Old Skool Negro', price: '$259.900', badge: 'Top ventas' },
-  { name: 'Tenis 574 Gris', price: '$329.900' },
-  { name: 'Mocasín Driver Solano', price: '$419.900' },
-  { name: 'Bota 6-Inch Trigo', price: '$459.900', initiallyWishlisted: true },
-]
-
-const featured = [
-  { name: 'Tenis Revolution Negro', price: '$289.900', initiallyWishlisted: true },
-  { name: 'Zapato Oxford Café', price: '$389.900', initiallyWishlisted: true },
-  { name: 'Tenis Suede Clásico', price: '$249.900' },
-  { name: 'Bota 6-Inch Trigo', price: '$459.900', initiallyWishlisted: true },
-]
-
-const saleItems = [
-  { name: 'Tenis 574 Gris', oldPrice: '$329.900', newPrice: '$247.425', discount: 25 },
-  { name: 'Tenis Old Skool Negro', oldPrice: '$259.900', newPrice: '$181.930', discount: 30 },
-  { name: 'Mocasín Driver Solano', oldPrice: '$419.900', newPrice: '$335.920', discount: 20 },
-  { name: 'Bota Colorado Café', oldPrice: '$499.900', newPrice: '$299.940', discount: 40 },
-]
-
-const brands = ['Nike', 'Puma', 'New Balance', 'Timberland', 'Vans', 'Tommy Hilfiger']
-
 function Home() {
-  const [subscribed, setSubscribed] = useState(false)
+  const [newsletter, setNewsletter] = useState({ status: 'idle', message: '' })
+  const { data: latest } = useApiData(() => listProducts({ sort: 'newest', size: 4 }), 'home-latest')
+  const { data: categories } = useApiData(listCategories, 'categories')
 
-  function handleSubscribe(event) {
+  async function handleSubscribe(event) {
     event.preventDefault()
-    setSubscribed(true)
-    event.target.reset()
+    const form = event.target
+    setNewsletter({ status: 'sending', message: '' })
+    try {
+      const response = await subscribeToNewsletter(new FormData(form).get('email'))
+      setNewsletter({ status: 'done', message: response.message })
+      form.reset()
+    } catch (error) {
+      setNewsletter({ status: 'error', message: error.message })
+    }
   }
 
   return (
@@ -97,33 +85,25 @@ function Home() {
         </div>
       </div>
 
-      <h2 className="section-title">Más vendidos</h2>
+      <h2 className="section-title">Novedades</h2>
       <div className="product-grid">
-        {bestSellers.map((product) => (
-          <ProductCard key={product.name} href="/product-detail" {...product} />
-        ))}
+        {latest
+          ? latest.content.map((product) => <ProductCard key={product.id} product={product} />)
+          : <p className="page-status">Cargando productos...</p>}
       </div>
 
-      <h2 className="section-title">Destacados</h2>
-      <div className="product-grid">
-        {featured.map((product) => (
-          <ProductCard key={product.name} href="/product-detail" {...product} />
-        ))}
-      </div>
-
-      <h2 className="section-title">Ofertas hasta 40% OFF</h2>
-      <div className="sale-grid">
-        {saleItems.map((item) => (
-          <SaleCard key={item.name} href="/product-detail" {...item} />
-        ))}
-      </div>
-
-      <h2 className="section-title">Compra por marca</h2>
-      <div className="brand-row">
-        {brands.map((brand) => (
-          <Link key={brand} to="/catalog" className="brand-chip">{brand}</Link>
-        ))}
-      </div>
+      {categories && categories.length > 0 && (
+        <>
+          <h2 className="section-title">Compra por categoría</h2>
+          <div className="brand-row">
+            {categories.map((category) => (
+              <Link key={category.id} to={`/catalog?category=${encodeURIComponent(category.name)}`} className="brand-chip">
+                {category.name}
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
 
       <section className="newsletter">
         <div className="newsletter-copy">
@@ -139,12 +119,11 @@ function Home() {
           </div>
         </div>
         <form onSubmit={handleSubscribe}>
-          <input type="email" placeholder="Tu correo electrónico" aria-label="Correo electrónico" required />
-          <button type="submit">Suscribirme</button>
+          <input type="email" name="email" placeholder="Tu correo electrónico" aria-label="Correo electrónico" required />
+          <button type="submit" disabled={newsletter.status === 'sending'}>Suscribirme</button>
         </form>
-        {subscribed && (
-          <p className="form-feedback">¡Listo! Revisa tu correo para confirmar la suscripción.</p>
-        )}
+        {newsletter.status === 'done' && <p className="form-feedback">{newsletter.message}</p>}
+        {newsletter.status === 'error' && <p className="form-error" role="alert">{newsletter.message}</p>}
       </section>
     </>
   )

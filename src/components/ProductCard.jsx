@@ -1,10 +1,13 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Stars from './Stars.jsx'
+import { useFavorites } from '../favorites/useFavorites.js'
+import { formatCOP } from '../utils/formatCurrency.js'
 import './ProductCard.css'
 
-function ProductCard({ href, name, price, rating = 5, badge, initiallyWishlisted = false }) {
-  const [wishlisted, setWishlisted] = useState(initiallyWishlisted)
+function ProductCard({ product }) {
+  const { isFavorite, toggle } = useFavorites()
+  const wishlisted = isFavorite(product.id)
+  const href = `/products/${product.id}`
+  const soldOut = product.variants.every((variant) => variant.stock === 0)
 
   return (
     <article className="product-card">
@@ -17,13 +20,13 @@ function ProductCard({ href, name, price, rating = 5, badge, initiallyWishlisted
         <span>[imagen]</span>
       </Link>
 
-      {badge && <span className="badge">{badge}</span>}
+      {soldOut && <span className="badge">Agotado</span>}
 
       <button
         type="button"
         className={wishlisted ? 'wishlist-btn active' : 'wishlist-btn'}
         aria-label={wishlisted ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-        onClick={() => setWishlisted((current) => !current)}
+        onClick={() => toggle(product)}
       >
         <svg viewBox="0 0 24 24" fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8">
           <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0L12 5.36l-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 9.61 3 11.34L12 20l9-8.66c1.67-1.73 1.54-4.64-.58-6.76Z" />
@@ -31,9 +34,8 @@ function ProductCard({ href, name, price, rating = 5, badge, initiallyWishlisted
       </button>
 
       <div className="info">
-        <Link to={href} className="name">{name}</Link>
-        <Stars rating={rating} />
-        <div className="price">{price}</div>
+        <Link to={href} className="name">{product.name}</Link>
+        <div className="price">{formatCOP(product.price)}</div>
       </div>
     </article>
   )
