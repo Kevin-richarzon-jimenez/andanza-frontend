@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ProductCard.jsx'
 import EmptyState from '../components/EmptyState.jsx'
+import Pagination from '../components/Pagination.jsx'
 import Select from '../components/Select.jsx'
 import { useApiData } from '../hooks/useApiData.js'
 import { getFilterOptions, listCategories, listProducts } from '../api/catalog.js'
@@ -273,27 +274,11 @@ function Catalog() {
                 ))}
               </div>
 
-              {totalPages > 1 && (
-                <nav className="catalog-pagination" aria-label="Paginación">
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-small"
-                    disabled={applied.page === 0}
-                    onClick={() => updateParams({ page: applied.page - 1 > 0 ? String(applied.page - 1) : '' })}
-                  >
-                    Anterior
-                  </button>
-                  <span>Página {page.page + 1} de {totalPages}</span>
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-small"
-                    disabled={applied.page + 1 >= totalPages}
-                    onClick={() => updateParams({ page: String(applied.page + 1) })}
-                  >
-                    Siguiente
-                  </button>
-                </nav>
-              )}
+              <Pagination
+                page={applied.page}
+                totalPages={totalPages}
+                onChange={(next) => updateParams({ page: next > 0 ? String(next) : '' })}
+              />
             </>
           )}
         </div>
