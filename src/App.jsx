@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import AccountLayout from './components/AccountLayout.jsx'
 import AuthLayout from './components/AuthLayout.jsx'
+import RequireAuth from './auth/RequireAuth.jsx'
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
@@ -14,7 +15,6 @@ import AddressForm from './pages/account/AddressForm.jsx'
 import Favorites from './pages/account/Favorites.jsx'
 import Comments from './pages/account/Comments.jsx'
 import Orders from './pages/account/Orders.jsx'
-import OrderDetail from './pages/account/OrderDetail.jsx'
 import ChangePassword from './pages/account/ChangePassword.jsx'
 
 import Login from './pages/auth/Login.jsx'
@@ -35,17 +35,17 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
-        <Route path="/product-detail" element={<ProductDetail />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
 
-        <Route path="/account" element={<AccountLayout />}>
+        <Route path="/account" element={<RequireAuth><AccountLayout /></RequireAuth>}>
           <Route path="profile" element={<Profile />} />
           <Route path="addresses" element={<Addresses />} />
-          <Route path="address-form" element={<AddressForm />} />
+          <Route path="addresses/new" element={<AddressForm />} />
+          <Route path="addresses/:id/edit" element={<AddressForm />} />
           <Route path="favorites" element={<Favorites />} />
           <Route path="comments" element={<Comments />} />
           <Route path="orders" element={<Orders />} />
-          <Route path="order-detail" element={<OrderDetail />} />
           <Route path="change-password" element={<ChangePassword />} />
         </Route>
 
