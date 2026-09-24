@@ -4,11 +4,18 @@
 }
 
 .auth-form {
+  position: relative;
   flex: 0 0 44%;
-  padding: 44px 40px;
+  padding: 76px 40px 44px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.auth-back {
+  position: absolute;
+  top: 28px;
+  left: 40px;
 }
 
 .auth-form .site-logo {
