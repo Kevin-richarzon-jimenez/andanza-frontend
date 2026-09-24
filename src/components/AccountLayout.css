@@ -1,0 +1,93 @@
+.account-body {
+  display: flex;
+  align-items: stretch;
+  padding-inline: max(var(--content-pad), calc((100% - var(--content-max)) / 2));
+}
+
+.account-sidebar {
+  flex: 0 0 260px;
+  border-right: 1px solid var(--line);
+}
+
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 26px;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+}
+
+.avatar svg {
+  width: 26px;
+  height: 26px;
+}
+
+.account-profile .name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.account-profile .email {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.account-menu {
+  padding: 6px 0;
+  list-style: none;
+  margin: 0;
+}
+
+.account-menu li a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 26px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  border-left: 3px solid transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.account-menu li a:hover {
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+
+.account-menu li a.active {
+  color: var(--ink);
+  background: var(--bg-soft);
+  border-left-color: var(--primary);
+}
+
+.account-menu li a.logout {
+  color: var(--primary-deep);
+}
+
+.account-menu li a.logout:hover {
+  color: var(--primary-deep);
+  background: #FFEAE6;
+}
+
+.account-content {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}
+
+.account-content h1 {
+  font-size: var(--text-page-sm);
+  margin-bottom: 20px;
+}
