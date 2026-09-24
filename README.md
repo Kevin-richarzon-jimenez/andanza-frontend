@@ -53,6 +53,10 @@ npm run lint
 
 Pantallas que hoy muestran un aviso o un estado vacío porque el backend todavía no expone lo necesario: pedidos y pago del carrito, recuperar contraseña, editar datos del perfil, editar o borrar comentarios propios, imágenes, descuentos y calificaciones de producto, y los filtros por marca y género.
 
-## Roadmap
+## Despliegue
 
-- Deploy: Vercel.
+El frontend se despliega en [Vercel](https://vercel.com): se importa el repositorio y sirven los valores por defecto (preset Vite, `npm run build`, carpeta `dist`). Cada merge a `main` publica una versión nueva.
+
+- **`VITE_API_URL`** (Settings → Environment Variables): la URL del backend con el prefijo de la API, por ejemplo `https://mi-backend.onrender.com/api/v1`. Vite la incorpora al construir, así que al cambiarla hay que volver a desplegar.
+- **`vercel.json`** reenvía todas las rutas a `index.html`. Sin esto, abrir directamente `/catalog` o `/products/...` daría 404, porque el enrutamiento lo hace React en el navegador.
+- El backend debe tener esta URL del frontend en su variable `CORS_ALLOWED_ORIGINS`; si no, el navegador bloquea las peticiones.
