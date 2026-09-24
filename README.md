@@ -2,7 +2,7 @@
 
 E-commerce de calzado. Proyecto de Sena.
 
-Repo poly-repo: este es el frontend. El backend (Spring Boot) vive aparte, en [andanza-backend](https://github.com/Kevin-richarzon-jimenez/andaza-back) — se comunican solo por API, no comparten código ni repo.
+Repo poly-repo: este es el frontend. El backend (Spring Boot) vive aparte, en [andaza-backend](https://github.com/Kevin-richarzon-jimenez/andaza-backend) — se comunican solo por API, no comparten código ni repo.
 
 ## Frontend
 
@@ -32,7 +32,7 @@ npm run lint
 - `main.jsx` — punto de entrada, monta `<App />` dentro de `<BrowserRouter>`.
 - `App.jsx` — define todas las rutas de la aplicación.
 - `index.css` — reset, variables de diseño (colores, tipografía, espaciados) y estilos compartidos entre muchas páginas/componentes.
-- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AuthLayout`, `ProductCard`, `SaleCard`, `Stars`, `Review`, `EmptyState`. Cada uno con su propio CSS colocado al lado (`Header.jsx` + `Header.css`).
+- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AuthLayout`, `ProductCard`, `SaleCard`, `Stars`, `Review`, `EmptyState`. Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
 - `pages/` — una carpeta/archivo por pantalla (`Home`, `Catalog`, `ProductDetail`, `Cart`, y las subcarpetas `account/`, `auth/`, `info/`).
 
 ## Roadmap
