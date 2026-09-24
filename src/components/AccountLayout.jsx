@@ -1,7 +1,37 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/useAuth.js'
+import { useConfirm } from '../confirm/useConfirm.js'
+import { useFavorites } from '../favorites/useFavorites.js'
+import { listMyComments } from '../api/comments.js'
 import './AccountLayout.css'
 
 function AccountLayout() {
+  const { user, logout } = useAuth()
+  const confirm = useConfirm()
+  const navigate = useNavigate()
+  const { favorites } = useFavorites()
+  const [commentCount, setCommentCount] = useState(null)
+
+  async function handleLogout() {
+    const confirmed = await confirm({
+      title: '¿Cerrar sesión?',
+      message: 'Tendrás que iniciar sesión de nuevo para ver tus favoritos y tus direcciones.',
+      confirmLabel: 'Cerrar sesión',
+    })
+    if (!confirmed) return
+    navigate('/')
+    logout()
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    listMyComments()
+      .then((comments) => { if (!cancelled) setCommentCount(comments.length) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
   return (
     <main className="account-body">
       <aside className="account-sidebar">
@@ -13,18 +43,22 @@ function AccountLayout() {
             </svg>
           </div>
           <div>
-            <div className="name">Juan Pérez</div>
-            <div className="email">juanperez@email.com</div>
+            <div className="name">{user?.firstName} {user?.lastName}</div>
+            <div className="email">{user?.email}</div>
           </div>
         </div>
         <ul className="account-menu">
           <li><NavLink to="/account/profile">Mis datos personales <span aria-hidden="true">›</span></NavLink></li>
           <li><NavLink to="/account/addresses">Mis direcciones <span aria-hidden="true">›</span></NavLink></li>
-          <li><NavLink to="/account/favorites">Mis favoritos <span className="mono">(3) ›</span></NavLink></li>
-          <li><NavLink to="/account/comments">Mis comentarios <span className="mono">(2) ›</span></NavLink></li>
+          <li><NavLink to="/account/favorites">Mis favoritos <span className="mono">({favorites.length}) ›</span></NavLink></li>
+          <li>
+            <NavLink to="/account/comments">
+              Mis comentarios <span className="mono">{commentCount === null ? '' : `(${commentCount}) `}›</span>
+            </NavLink>
+          </li>
           <li><NavLink to="/account/orders">Mis pedidos <span aria-hidden="true">›</span></NavLink></li>
           <li><NavLink to="/account/change-password">Cambiar contraseña <span aria-hidden="true">›</span></NavLink></li>
-          <li><NavLink to="/auth/login" className="logout">Cerrar sesión <span aria-hidden="true">›</span></NavLink></li>
+          <li><button type="button" className="logout" onClick={handleLogout}>Cerrar sesión <span aria-hidden="true">›</span></button></li>
         </ul>
       </aside>
 

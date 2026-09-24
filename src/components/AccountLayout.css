@@ -49,19 +49,26 @@
   margin: 0;
 }
 
-.account-menu li a {
+.account-menu li a,
+.account-menu li button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   padding: 13px 26px;
+  border: none;
+  border-left: 3px solid transparent;
+  background: none;
   font-size: 0.85rem;
   font-weight: 600;
+  text-align: left;
   color: var(--ink-soft);
-  border-left: 3px solid transparent;
+  cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.account-menu li a:hover {
+.account-menu li a:hover,
+.account-menu li button:hover {
   color: var(--ink);
   background: var(--bg-soft);
 }
@@ -72,11 +79,11 @@
   border-left-color: var(--primary);
 }
 
-.account-menu li a.logout {
+.account-menu li .logout {
   color: var(--primary-deep);
 }
 
-.account-menu li a.logout:hover {
+.account-menu li .logout:hover {
   color: var(--primary-deep);
   background: #FFEAE6;
 }

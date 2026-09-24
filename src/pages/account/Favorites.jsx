@@ -1,20 +1,10 @@
-import { useState } from 'react'
 import ProductCard from '../../components/ProductCard.jsx'
 import EmptyState from '../../components/EmptyState.jsx'
+import { useFavorites } from '../../favorites/useFavorites.js'
 import '../account-shared.css'
 
-const initialFavorites = [
-  { name: 'Tenis Revolution Negro', price: '$289.900' },
-  { name: 'Bota 6-Inch Trigo', price: '$459.900' },
-  { name: 'Zapato Oxford Café', price: '$389.900' },
-]
-
 function Favorites() {
-  const [favorites, setFavorites] = useState(initialFavorites)
-
-  function handleRemove(name) {
-    setFavorites((current) => current.filter((product) => product.name !== name))
-  }
+  const { favorites } = useFavorites()
 
   return (
     <>
@@ -23,25 +13,7 @@ function Favorites() {
       {favorites.length > 0 ? (
         <div className="favorites-grid">
           {favorites.map((product) => (
-            // ProductCard manages its wishlist heart internally and doesn't expose
-            // a callback, so we listen for the click bubbling up from its
-            // ".wishlist-btn" and drop the product from this page's own list —
-            // that's what makes the grid (and eventually the empty state) update.
-            <div
-              key={product.name}
-              onClick={(event) => {
-                if (event.target.closest('.wishlist-btn')) {
-                  handleRemove(product.name)
-                }
-              }}
-            >
-              <ProductCard
-                href="/product-detail"
-                name={product.name}
-                price={product.price}
-                initiallyWishlisted
-              />
-            </div>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : (

@@ -1,66 +1,73 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import EmptyState from '../../components/EmptyState.jsx'
+import { useConfirm } from '../../confirm/useConfirm.js'
+import { useApiData } from '../../hooks/useApiData.js'
+import { deleteAddress, listAddresses } from '../../api/addresses.js'
 import '../account-shared.css'
 
-const initialAddresses = [
-  {
-    id: 1,
-    isDefault: true,
-    label: 'Casa',
-    name: 'Juan Pérez',
-    street: 'Cra 45 # 72-30, Apto 501',
-    city: 'Barranquilla, Atlántico',
-    phone: '300 123 4567',
-  },
-  {
-    id: 2,
-    isDefault: false,
-    label: 'Oficina',
-    name: 'Juan Pérez',
-    street: 'Calle 84 # 10-15, Piso 3',
-    city: 'Barranquilla, Atlántico',
-    phone: '300 123 4567',
-  },
-]
-
 function Addresses() {
-  const [addresses, setAddresses] = useState(initialAddresses)
+  const confirm = useConfirm()
+  const { data: addresses, error, reload } = useApiData(listAddresses, 'addresses')
   const [removingId, setRemovingId] = useState(null)
+  const [removeError, setRemoveError] = useState(null)
 
-  function handleDelete(id) {
-    setRemovingId(id)
-    setTimeout(() => {
-      setAddresses((current) => current.filter((address) => address.id !== id))
+  async function handleDelete(address) {
+    const promotesAnother = address.isDefault && addresses.length > 1
+    const confirmed = await confirm({
+      title: '¿Eliminar esta dirección?',
+      message: `Se eliminará «${address.label}» (${address.street}). Esta acción no se puede deshacer.${promotesAnother ? ' Otra dirección pasará a ser la predeterminada.' : ''}`,
+      confirmLabel: 'Eliminar',
+    })
+    if (!confirmed) return
+
+    setRemovingId(address.id)
+    setRemoveError(null)
+    try {
+      await deleteAddress(address.id)
+      reload()
+    } catch (err) {
+      setRemoveError(err.message)
+    } finally {
       setRemovingId(null)
-    }, 200)
+    }
   }
 
   return (
     <>
       <h1>Mis direcciones</h1>
 
-      {addresses.length > 0 ? (
+      {error && (
+        <div className="page-status" role="alert">
+          <p>{error.message}</p>
+          <button type="button" className="btn btn-outline btn-small" onClick={reload}>Reintentar</button>
+        </div>
+      )}
+      {!error && !addresses && <div className="page-status">Cargando direcciones...</div>}
+      {removeError && <p className="form-error" role="alert">{removeError}</p>}
+
+      {addresses && addresses.length > 0 && (
         <div>
           {addresses.map((address) => (
             <div
               key={address.id}
               className="address-card"
-              style={{ opacity: removingId === address.id ? 0 : 1 }}
+              style={{ opacity: removingId === address.id ? 0.4 : 1 }}
             >
               {address.isDefault && <span className="default-tag">Predeterminada</span>}
               <div className="label">{address.label}</div>
               <div className="detail">
-                {address.name} · {address.street}
+                {address.recipientName} · {address.street}
                 <br />
-                {address.city} · Tel: {address.phone}
+                {address.city}, {address.department} · Tel: {address.phone}
               </div>
               <div className="address-actions">
-                <Link to="/account/address-form" className="btn btn-outline btn-small">Editar</Link>
+                <Link to={`/account/addresses/${address.id}/edit`} className="btn btn-outline btn-small">Editar</Link>
                 <button
                   type="button"
                   className="btn btn-outline btn-small"
-                  onClick={() => handleDelete(address.id)}
+                  disabled={removingId === address.id}
+                  onClick={() => handleDelete(address)}
                 >
                   Eliminar
                 </button>
@@ -68,7 +75,9 @@ function Addresses() {
             </div>
           ))}
         </div>
-      ) : (
+      )}
+
+      {addresses && addresses.length === 0 && (
         <EmptyState
           icon={(
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -81,7 +90,7 @@ function Addresses() {
         />
       )}
 
-      <Link to="/account/address-form" className="btn btn-fill">+ Agregar dirección</Link>
+      <Link to="/account/addresses/new" className="btn btn-fill">+ Agregar dirección</Link>
     </>
   )
 }
