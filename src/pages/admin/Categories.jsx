@@ -1,11 +1,16 @@
 import { useState } from 'react'
 import { useConfirm } from '../../confirm/useConfirm.js'
 import { useApiData } from '../../hooks/useApiData.js'
+import { useFormDialog } from '../../hooks/useFormDialog.js'
 import { createCategory, deleteCategory } from '../../api/admin.js'
 import { listCategories } from '../../api/catalog.js'
-import { describeError } from '../../utils/formErrors.js'
+import FormDialog from '../../components/admin/FormDialog.jsx'
+import PageHeader from '../../components/admin/PageHeader.jsx'
+import RowActions from '../../components/admin/RowActions.jsx'
 import '../account-shared.css'
 import './admin-shared.css'
+
+const EMPTY_FORM = { name: '', description: '' }
 
 function FieldError({ message }) {
   return message ? <div className="field-error" role="alert">{message}</div> : null
@@ -14,27 +19,22 @@ function FieldError({ message }) {
 function Categories() {
   const confirm = useConfirm()
   const { data: categories, error, reload } = useApiData(listCategories, 'admin:categories')
-  const [form, setForm] = useState({ name: '', description: '' })
-  const [formError, setFormError] = useState(null)
-  const [saving, setSaving] = useState(false)
+  const dialog = useFormDialog()
+  const [form, setForm] = useState(EMPTY_FORM)
   const [notice, setNotice] = useState('')
   const [actionError, setActionError] = useState(null)
 
-  async function handleCreate(event) {
-    event.preventDefault()
-    setSaving(true)
-    setFormError(null)
-    setNotice('')
-    try {
+  function openCreate() {
+    setForm(EMPTY_FORM)
+    dialog.open()
+  }
+
+  function handleCreate() {
+    dialog.submit(async () => {
       const created = await createCategory(form)
-      setForm({ name: '', description: '' })
       setNotice(`La categoría «${created.name}» se creó correctamente.`)
       reload()
-    } catch (err) {
-      setFormError(describeError(err))
-    } finally {
-      setSaving(false)
-    }
+    })
   }
 
   async function handleDelete(category) {
@@ -54,11 +54,9 @@ function Categories() {
     }
   }
 
-  const fields = formError?.fields ?? {}
-
   return (
     <>
-      <div className="admin-header"><h1>Categorías</h1></div>
+      <PageHeader title="Categorías" actions={[{ label: '+ Nueva categoría', onClick: openCreate }]} />
 
       {notice && <p className="admin-notice" role="status">{notice}</p>}
       {actionError && <p className="form-error" role="alert" style={{ marginTop: 0, marginBottom: 12 }}>{actionError}</p>}
@@ -83,9 +81,7 @@ function Categories() {
                   <td className="strong">{category.name}</td>
                   <td className="text-cell">{category.description}</td>
                   <td>
-                    <div className="admin-actions">
-                      <button type="button" className="btn btn-outline btn-small btn-danger" onClick={() => handleDelete(category)}>Eliminar</button>
-                    </div>
+                    <RowActions actions={[{ label: 'Eliminar', variant: 'danger', onClick: () => handleDelete(category), ariaLabel: `Eliminar la categoría ${category.name}` }]} />
                   </td>
                 </tr>
               ))}
@@ -94,23 +90,18 @@ function Categories() {
         </div>
       )}
 
-      <h2 className="admin-section-title">Nueva categoría</h2>
-      <form className="narrow-form admin-form" onSubmit={handleCreate}>
+      <FormDialog dialog={dialog} title="Nueva categoría" description="Sirve para agrupar productos en la tienda." submitLabel="Crear categoría" onSubmit={handleCreate}>
         <div className="field-group">
           <label htmlFor="category-name">Nombre</label>
           <input id="category-name" required maxLength={40} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
-          <FieldError message={fields.name} />
+          <FieldError message={dialog.fields.name} />
         </div>
         <div className="field-group">
           <label htmlFor="category-description">Descripción</label>
           <textarea id="category-description" required maxLength={200} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
-          <FieldError message={fields.description} />
+          <FieldError message={dialog.fields.description} />
         </div>
-        {formError && !Object.keys(fields).length && <p className="form-error" role="alert">{formError.message}</p>}
-        <div className="form-actions">
-          <button type="submit" className="btn btn-fill" disabled={saving}>{saving ? 'Creando...' : 'Crear categoría'}</button>
-        </div>
-      </form>
+      </FormDialog>
     </>
   )
 }

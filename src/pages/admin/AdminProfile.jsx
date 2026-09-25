@@ -1,6 +1,7 @@
 import { useAuth } from '../../auth/useAuth.js'
 import { initialsOf, roleLabel } from '../../auth/roles.js'
 import ChangePassword from '../account/ChangePassword.jsx'
+import PageHeader from '../../components/admin/PageHeader.jsx'
 import './admin-shared.css'
 import './AdminProfile.css'
 
@@ -10,7 +11,7 @@ function AdminProfile() {
 
   return (
     <>
-      <div className="admin-header"><h1>Mi perfil</h1></div>
+      <PageHeader title="Mi perfil" />
 
       <section className="panel-card profile-summary" aria-label="Mis datos">
         <span className="profile-avatar" aria-hidden="true">{initialsOf(user)}</span>

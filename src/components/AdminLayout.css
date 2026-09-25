@@ -206,7 +206,6 @@
 .panel-content {
   flex: 1;
   width: 100%;
-  max-width: 1240px;
   padding: 28px 32px 48px;
 }
 

@@ -292,3 +292,23 @@ a.admin-card:hover {
   font-size: 0.85rem;
   color: var(--ink-soft);
 }
+
+.admin-thumb {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+}
+
+.admin-thumb.is-empty {
+  border-style: dashed;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

@@ -1,0 +1,457 @@
+/* Pantallas de un producto en el panel. Un solo ancho y un solo ritmo vertical para todas las secciones:
+   la página mide siempre lo mismo y cada bloque es una tarjeta separada de la siguiente por 20 px. */
+.pd-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pd-page .back-link {
+  align-self: flex-start;
+}
+
+.pd-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pd-new-title {
+  margin: -8px 0 0;
+}
+
+/* Resumen del producto */
+.pd-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.pd-head-thumb {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+}
+
+.pd-head-thumb.is-empty {
+  border-style: dashed;
+}
+
+.pd-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-head-text h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.pd-head-text p {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.pd-head-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.chip {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.chip.is-out {
+  background: #FFEAE6;
+  color: var(--primary-deep);
+}
+
+/* Pestañas */
+.pd-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: -4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pd-tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: color 0.12s ease;
+}
+
+.pd-tabs a:hover {
+  color: var(--ink);
+}
+
+.pd-tabs a.active {
+  color: var(--ink);
+  border-bottom-color: var(--primary);
+}
+
+.pd-tab-count {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  font-size: 0.68rem;
+}
+
+/* Secciones (tarjetas) */
+.pd-section {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.pd-section.is-danger {
+  border-color: #F3B8AD;
+}
+
+.pd-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.pd-section-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.pd-section-head h2 {
+  font-size: 1rem;
+}
+
+.pd-section-head p {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.panel-content .admin-form.is-plain {
+  max-width: none;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+/* Los datos del producto se reparten a lo ancho: con pantalla grande caben en una sola fila. */
+.pd-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px 20px;
+}
+
+@media (max-width: 1100px) {
+  .pd-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pd-fields .field-group {
+  margin: 0;
+}
+
+.pd-fields .pd-span-all {
+  grid-column: 1 / -1;
+}
+
+.pd-form .select,
+.pd-form .select-button {
+  width: 100%;
+}
+
+.pd-form .select-button {
+  height: 38px;
+  justify-content: space-between;
+  border-width: 1.5px;
+  border-radius: 7px;
+  font-size: 0.85rem;
+}
+
+.pd-form .select-list {
+  left: 0;
+}
+
+.pd-form textarea {
+  width: 100%;
+  min-height: 130px;
+  border: 1.5px solid var(--line);
+  border-radius: 7px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.15s ease;
+}
+
+.pd-form textarea:hover {
+  border-color: var(--ink-soft);
+}
+
+.pd-form textarea:focus {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.pd-section .admin-notice {
+  margin-bottom: 16px;
+}
+
+/* Colores */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.color-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-card:hover,
+.color-card:focus-visible {
+  border-color: var(--ink);
+  box-shadow: 0 8px 20px rgba(20, 21, 28, 0.08);
+}
+
+.color-card-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  background: var(--bg-soft);
+}
+
+.color-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.color-card-empty {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.color-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px 14px;
+}
+
+.color-card-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.color-card-meta {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.color-card-meta.is-warning {
+  color: var(--casual-deep);
+  font-weight: 600;
+}
+
+.color-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.color-dot.is-large {
+  width: 22px;
+  height: 22px;
+}
+
+/* Vista de un color */
+.color-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.color-head .back-link {
+  flex-basis: 100%;
+}
+
+.color-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+}
+
+.color-summary {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* Agregar talla y agregar color */
+.add-size {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.add-size-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.add-size-row .field-group {
+  margin: 0;
+}
+
+.size-picker {
+  margin: 20px 0 4px;
+  padding: 0;
+  border: none;
+}
+
+.size-picker legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.size-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.size-chips .pill {
+  min-width: 42px;
+}
+
+.size-others {
+  max-width: 320px;
+}
+
+/* Tabla de tallas: no se estira por toda la pantalla (el botón quedaría lejísimos del stock). */
+.sizes-table {
+  max-width: 760px;
+}
+
+/* Selectores de color y talla (fichas en vez del desplegable nativo del navegador) */
+.picker {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.picker legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.color-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.color-chip:hover {
+  border-color: var(--ink-soft);
+}
+
+.color-chip.selected {
+  border-color: var(--ink);
+  background: var(--bg-soft);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.picker-other {
+  max-width: 320px;
+  margin: 0;
+}
+
+.picker-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.size-stock {
+  max-width: 240px;
+  margin: 0;
+}

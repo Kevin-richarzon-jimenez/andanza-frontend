@@ -7,10 +7,11 @@ import { useApiData } from '../../hooks/useApiData.js'
 import { useListParams } from '../../hooks/useListParams.js'
 import { deleteProduct } from '../../api/admin.js'
 import { listCategories, listProducts } from '../../api/catalog.js'
+import PageHeader from '../../components/admin/PageHeader.jsx'
+import RowActions from '../../components/admin/RowActions.jsx'
 import { formatCOP } from '../../utils/formatCurrency.js'
 import { coverImage } from '../../utils/productImages.js'
 import './admin-shared.css'
-import './ProductImages.css'
 
 const PAGE_SIZE = 10
 const LOW_STOCK = 5
@@ -62,10 +63,7 @@ function Products() {
 
   return (
     <>
-      <div className="admin-header">
-        <h1>Productos</h1>
-        <Link to="/admin/products/new" className="btn btn-fill">+ Nuevo producto</Link>
-      </div>
+      <PageHeader title="Productos" actions={[{ label: '+ Nuevo producto', to: '/admin/products/new' }]} />
 
       {notice && <p className="admin-notice" role="status">{notice}</p>}
 
@@ -120,7 +118,7 @@ function Products() {
                       <div className="product-cell">
                         {cover ? <img className="admin-thumb" src={cover.thumbnailUrl} alt="" loading="lazy" /> : <span className="admin-thumb is-empty" aria-hidden="true" />}
                         <div>
-                          <Link className="strong" to={`/admin/products/${product.id}/edit`}>{product.name}</Link>
+                          <Link className="strong" to={`/admin/products/${product.id}`}>{product.name}</Link>
                           <span className="muted">{product.brand}</span>
                         </div>
                       </div>
@@ -132,10 +130,10 @@ function Products() {
                       <span className="muted">{product.variants.length} {product.variants.length === 1 ? 'variante' : 'variantes'}</span>
                     </td>
                     <td>
-                      <div className="admin-actions">
-                        <Link to={`/admin/products/${product.id}/edit`} className="btn btn-outline btn-small">Editar</Link>
-                        <button type="button" className="btn btn-outline btn-small btn-danger" onClick={() => handleDelete(product)}>Eliminar</button>
-                      </div>
+                      <RowActions actions={[
+                        { label: 'Editar', to: `/admin/products/${product.id}`, ariaLabel: `Editar ${product.name}` },
+                        { label: 'Eliminar', variant: 'danger', onClick: () => handleDelete(product), ariaLabel: `Eliminar ${product.name}` },
+                      ]} />
                     </td>
                   </tr>
                 )
