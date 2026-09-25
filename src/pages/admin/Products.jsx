@@ -12,7 +12,6 @@ import RowActions from '../../components/admin/RowActions.jsx'
 import { formatCOP } from '../../utils/formatCurrency.js'
 import { coverImage } from '../../utils/productImages.js'
 import './admin-shared.css'
-import './ProductImages.css'
 
 const PAGE_SIZE = 10
 const LOW_STOCK = 5
@@ -119,7 +118,7 @@ function Products() {
                       <div className="product-cell">
                         {cover ? <img className="admin-thumb" src={cover.thumbnailUrl} alt="" loading="lazy" /> : <span className="admin-thumb is-empty" aria-hidden="true" />}
                         <div>
-                          <Link className="strong" to={`/admin/products/${product.id}/edit`}>{product.name}</Link>
+                          <Link className="strong" to={`/admin/products/${product.id}`}>{product.name}</Link>
                           <span className="muted">{product.brand}</span>
                         </div>
                       </div>
@@ -132,7 +131,7 @@ function Products() {
                     </td>
                     <td>
                       <RowActions actions={[
-                        { label: 'Editar', to: `/admin/products/${product.id}/edit`, ariaLabel: `Editar ${product.name}` },
+                        { label: 'Editar', to: `/admin/products/${product.id}`, ariaLabel: `Editar ${product.name}` },
                         { label: 'Eliminar', variant: 'danger', onClick: () => handleDelete(product), ariaLabel: `Eliminar ${product.name}` },
                       ]} />
                     </td>

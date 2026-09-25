@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { useConfirm } from '../../confirm/useConfirm.js'
-import { deleteProductImage, setProductImageCover, uploadProductImage } from '../../api/admin.js'
-import { IMAGE_ACCEPT, prepareImage } from '../../utils/imageResize.js'
-import { imagesOfColor } from '../../utils/productImages.js'
-import { swatchFor } from '../../utils/colors.js'
-import './ProductImages.css'
+import { useConfirm } from '../../../confirm/useConfirm.js'
+import { deleteProductImage, setProductImageCover, uploadProductImage } from '../../../api/admin.js'
+import { IMAGE_ACCEPT, prepareImage } from '../../../utils/imageResize.js'
+import { imagesOfColor } from '../../../utils/productImages.js'
+import { MAX_IMAGES_PER_COLOR } from './productData.js'
+import './ColorGallery.css'
 
-const MAX_IMAGES_PER_COLOR = 5
+const STATUS_TEXT = { waiting: 'En espera', preparing: 'Preparando...', uploading: 'Subiendo...', done: 'Lista', error: '' }
 
-// Galería de un color: sus fotos (la primera es la portada) y una zona para arrastrar o elegir más.
+// Las fotos de un color de un producto (la primera es la portada) y la zona para arrastrar o elegir más. Solo se
+// muestra dentro de la vista de ese color, así que siempre está claro a qué pertenecen.
 function ColorGallery({ product, color, onChanged }) {
   const confirm = useConfirm()
   const [dragging, setDragging] = useState(false)
@@ -18,7 +19,6 @@ function ColorGallery({ product, color, onChanged }) {
 
   const images = imagesOfColor(product, color)
   const free = MAX_IMAGES_PER_COLOR - images.length
-  const swatch = swatchFor(color)
 
   function track(id, changes) {
     setUploads((current) => current.map((item) => (item.id === id ? { ...item, ...changes } : item)))
@@ -84,15 +84,9 @@ function ColorGallery({ product, color, onChanged }) {
     addFiles(event.dataTransfer.files)
   }
 
-  const statusText = { waiting: 'En espera', preparing: 'Preparando...', uploading: 'Subiendo...', done: 'Lista', error: '' }
-
   return (
-    <section className="color-gallery" aria-label={`Imágenes del color ${color}`}>
-      <div className="color-gallery-head">
-        <span className="color-dot" style={{ background: swatch.hex, border: swatch.outline ? '1px solid #ddd' : undefined }} aria-hidden="true" />
-        <h3>{color}</h3>
-        <span className="color-gallery-count">{images.length} de {MAX_IMAGES_PER_COLOR}</span>
-      </div>
+    <div className="color-gallery" role="group" aria-label={`Imágenes del color ${color}`}>
+      <div className="gallery-count">{images.length} de {MAX_IMAGES_PER_COLOR} fotos</div>
 
       <div className="image-grid">
         {images.map((image, index) => (
@@ -138,32 +132,14 @@ function ColorGallery({ product, color, onChanged }) {
           {uploads.map((item) => (
             <li key={item.id} className={`upload-item is-${item.status}`}>
               <span className="upload-name">{item.name}</span>
-              <span className="upload-state">{item.status === 'error' ? item.message : statusText[item.status]}</span>
+              <span className="upload-state">{item.status === 'error' ? item.message : STATUS_TEXT[item.status]}</span>
             </li>
           ))}
         </ul>
       )}
       {error && <p className="form-error" role="alert" style={{ marginTop: 10 }}>{error}</p>}
-    </section>
+    </div>
   )
 }
 
-// Una galería por cada color del producto. Se agregan desde la edición: hace falta que el producto ya exista.
-function ProductImages({ product, onChanged }) {
-  const colors = [...new Set(product.variants.map((variant) => variant.color))]
-
-  return (
-    <>
-      <h2 className="admin-section-title">Imágenes</h2>
-      <p className="admin-subtitle" style={{ margin: '-6px 0 14px' }}>
-        Cada color tiene su galería, de hasta {MAX_IMAGES_PER_COLOR} fotos; la primera es la portada. Las tallas de un mismo color comparten fotos.
-        Conviene que el zapato quede centrado, porque las tarjetas recortan la foto en cuadrado.
-      </p>
-      <div className="color-galleries">
-        {colors.map((color) => <ColorGallery key={color} product={product} color={color} onChanged={onChanged} />)}
-      </div>
-    </>
-  )
-}
-
-export default ProductImages
+export default ColorGallery

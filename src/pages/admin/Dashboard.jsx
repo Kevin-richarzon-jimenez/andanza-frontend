@@ -72,7 +72,7 @@ function Dashboard() {
             <tbody>
               {lowStock.slice(0, LOW_STOCK_ROWS).map(({ product, variant }) => (
                 <tr key={variant.id}>
-                  <td><Link className="strong" to={`/admin/products/${product.id}/edit`}>{product.name}</Link></td>
+                  <td><Link className="strong" to={`/admin/products/${product.id}`}>{product.name}</Link></td>
                   <td>Talla {variant.size} · {variant.color}</td>
                   <td className={variant.stock === 0 ? 'num stock-out' : 'num stock-low'}>{variant.stock === 0 ? 'Agotado' : variant.stock}</td>
                 </tr>
