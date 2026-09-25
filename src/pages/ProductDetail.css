@@ -138,9 +138,20 @@
   align-items: center;
   gap: 6px;
   font-size: 0.78rem;
-  color: var(--casual-deep);
   font-weight: 600;
   margin-top: 8px;
+}
+
+.stock-note.ok {
+  color: var(--ok);
+}
+
+.stock-note.low {
+  color: var(--casual-deep);
+}
+
+.stock-note.out {
+  color: var(--primary-deep);
 }
 
 .stock-note svg {
