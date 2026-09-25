@@ -5,10 +5,13 @@ import { ProductCardSkeleton } from '../components/Skeleton.jsx'
 import { useApiData } from '../hooks/useApiData.js'
 import { listCategories, listProducts } from '../api/catalog.js'
 import { subscribeToNewsletter } from '../api/contact.js'
+import heroImage from '../assets/hero.webp'
 import './Home.css'
 
 function Home() {
   const [newsletter, setNewsletter] = useState({ status: 'idle', message: '' })
+  // Si la foto no carga se quita: queda el fondo cálido de la portada en vez del ícono de imagen rota.
+  const [heroFailed, setHeroFailed] = useState(false)
   const { data: latest, error: latestError, reload: reloadLatest } = useApiData(() => listProducts({ sort: 'newest', size: 4 }), 'home-latest')
   const { data: categories } = useApiData(listCategories, 'categories')
 
@@ -29,14 +32,17 @@ function Home() {
     <>
       <section className="hero">
         <div className="banner">
-          <div className="banner-tag">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <rect x="3" y="5" width="18" height="14" rx="2" />
-              <circle cx="8.5" cy="10" r="1.4" />
-              <path d="M21 15l-5-5-4 4-3-3-6 6" />
-            </svg>
-            <span>[imagen de portada]</span>
-          </div>
+          {!heroFailed && (
+            <img
+              src={heroImage}
+              alt="Botas de montaña sobre las rocas, con las montañas al atardecer de fondo"
+              width="1536"
+              height="934"
+              fetchPriority="high"
+              decoding="async"
+              onError={() => setHeroFailed(true)}
+            />
+          )}
         </div>
         <div className="content">
           <div className="copy">

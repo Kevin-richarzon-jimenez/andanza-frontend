@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth.js'
 import { useCart } from '../cart/useCart.js'
 import './Header.css'
 
-const TOPBAR_HEIGHT = 38
+// En el Inicio el encabezado flota sobre la portada; al bajar unos píxeles gana fondo blanco.
+const PIN_SCROLL_OFFSET = 10
 
 function Header() {
   const { pathname, search } = useLocation()
@@ -13,7 +14,6 @@ function Header() {
   const { count } = useCart()
   const [query, setQuery] = useState('')
   const overlay = pathname === '/'
-  const headerRef = useRef(null)
   const [pinned, setPinned] = useState(false)
 
   useEffect(() => {
@@ -22,15 +22,7 @@ function Header() {
     let ticking = false
 
     function applyScrollState() {
-      const scrollTop = window.scrollY
-      const header = headerRef.current
-      if (scrollTop > TOPBAR_HEIGHT) {
-        setPinned(true)
-        if (header) header.style.top = '0px'
-      } else {
-        setPinned(false)
-        if (header) header.style.top = `${TOPBAR_HEIGHT - scrollTop}px`
-      }
+      setPinned(window.scrollY > PIN_SCROLL_OFFSET)
       ticking = false
     }
 
@@ -57,18 +49,7 @@ function Header() {
 
   return (
     <>
-      <div className="topbar">
-        <div className="topbar-inner">
-          <span className="topbar-message">Envío gratis en compras desde $300.000</span>
-          <div className="topbar-links">
-            <Link to="/info/faq">Ayuda</Link>
-            <a href="#">ES</a>
-            <a href="#">COP</a>
-          </div>
-        </div>
-      </div>
-
-      <header ref={overlay ? headerRef : null} className={headerClassName}>
+      <header className={headerClassName}>
         <Link to="/" className="site-logo">andanza<span>.</span></Link>
         <nav className="site-nav">
           <NavLink to="/" end>Inicio</NavLink>

@@ -87,6 +87,6 @@ El frontend se despliega en [Vercel](https://vercel.com): se importa el reposito
 El backend gratuito de Render se duerme tras unos 15 minutos sin tráfico y tarda en despertar: con su 0.1 CPU, Spring Boot tarda entre 1,5 y 3 minutos en arrancar (ver el README del backend). El frontend lo tiene en cuenta:
 
 - Al abrir la web hace una llamada a `/actuator/health` sin esperar respuesta, para que el servidor empiece a despertar mientras el visitante lee el Inicio.
-- Las consultas que fallan porque el servidor no responde (o contesta 502, 503 o 504) se reintentan con espera creciente (1, 2, 4, 8 y luego 10 s, hasta 22 veces, unos 3 minutos) y una barra avisa "Estamos despertando el servidor". Las peticiones que modifican datos no se reintentan solas.
+- Las consultas que fallan porque el servidor no responde (o contesta 502, 503 o 504) se reintentan con espera creciente (1, 2, 4, 8 y luego 10 s, hasta 22 veces, unos 3 minutos) y un aviso flotante abajo dice "Estamos despertando el servidor". Las peticiones que modifican datos no se reintentan solas.
 - Mientras llegan los datos se ven esqueletos con la forma de la página, y los filtros mantienen su lugar. Lo ya cargado queda en caché durante la sesión.
 - Para que no se duerma, un monitor externo puede llamar a `/actuator/health` cada 10 minutos (por ejemplo UptimeRobot, gratis).
