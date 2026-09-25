@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import AccountLayout from './components/AccountLayout.jsx'
@@ -21,14 +22,6 @@ import Comments from './pages/account/Comments.jsx'
 import Orders from './pages/account/Orders.jsx'
 import ChangePassword from './pages/account/ChangePassword.jsx'
 
-import Dashboard from './pages/admin/Dashboard.jsx'
-import AdminProducts from './pages/admin/Products.jsx'
-import ProductForm from './pages/admin/ProductForm.jsx'
-import Categories from './pages/admin/Categories.jsx'
-import AdminComments from './pages/admin/Comments.jsx'
-import Users from './pages/admin/Users.jsx'
-import Messages from './pages/admin/Messages.jsx'
-
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
 import ForgotPassword from './pages/auth/ForgotPassword.jsx'
@@ -40,6 +33,15 @@ import Returns from './pages/info/Returns.jsx'
 import Shipping from './pages/info/Shipping.jsx'
 import SizeGuide from './pages/info/SizeGuide.jsx'
 import Terms from './pages/info/Terms.jsx'
+
+// Las pantallas del panel se descargan solo cuando alguien entra al panel: el resto de los visitantes no las necesita.
+const Dashboard = lazy(() => import('./pages/admin/Dashboard.jsx'))
+const AdminProducts = lazy(() => import('./pages/admin/Products.jsx'))
+const ProductForm = lazy(() => import('./pages/admin/ProductForm.jsx'))
+const Categories = lazy(() => import('./pages/admin/Categories.jsx'))
+const AdminComments = lazy(() => import('./pages/admin/Comments.jsx'))
+const Users = lazy(() => import('./pages/admin/Users.jsx'))
+const Messages = lazy(() => import('./pages/admin/Messages.jsx'))
 
 function App() {
   return (
