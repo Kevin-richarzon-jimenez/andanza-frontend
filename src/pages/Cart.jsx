@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../cart/useCart.js'
 import { useConfirm } from '../confirm/useConfirm.js'
@@ -8,6 +9,21 @@ import { formatCOP } from '../utils/formatCurrency.js'
 import './Cart.css'
 
 const TOTALS_DELAY_MS = 300
+
+// Miniatura de una línea del carrito; si la foto no carga, el recuadro "[imagen]".
+function CartThumb({ item }) {
+  const [failed, setFailed] = useState(false)
+  const href = `/products/${item.productId}`
+
+  if (item.imageUrl && !failed) {
+    return (
+      <Link to={href} className="cart-thumb" aria-label={item.name} tabIndex={-1}>
+        <img src={item.imageUrl} alt="" loading="lazy" onError={() => setFailed(true)} />
+      </Link>
+    )
+  }
+  return <Link to={href} className="placeholder"><span>[imagen]</span></Link>
+}
 
 function Cart() {
   const { items, setQuantity, remove, clear } = useCart()
@@ -59,13 +75,7 @@ function Cart() {
           ) : (
             items.map((item) => (
               <div className="cart-row" key={item.variantId}>
-                {item.imageUrl ? (
-                  <Link to={`/products/${item.productId}`} className="cart-thumb" aria-label={item.name} tabIndex={-1}>
-                    <img src={item.imageUrl} alt="" loading="lazy" />
-                  </Link>
-                ) : (
-                  <Link to={`/products/${item.productId}`} className="placeholder"><span>[imagen]</span></Link>
-                )}
+                <CartThumb item={item} />
                 <div className="item-info">
                   <Link to={`/products/${item.productId}`} className="name">{item.name}</Link>
                   <div className="variant">Talla {item.size} · {item.color}</div>

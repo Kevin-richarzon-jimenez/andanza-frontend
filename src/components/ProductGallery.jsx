@@ -2,8 +2,12 @@ import { useState } from 'react'
 
 // Foto principal y miniaturas de un color. Sin fotos, el mismo recuadro de "imagen" que usan las tarjetas.
 // Quien la usa le pone `key` con el color, para que al cambiar de color vuelva a la primera foto.
-function ProductGallery({ images, alt, emptyText = '[imagen]' }) {
+function ProductGallery({ images: allImages, alt, emptyText = '[imagen]' }) {
   const [selected, setSelected] = useState(0)
+  // Las fotos que no cargan se descartan (en vez de mostrar el ícono de imagen rota); si fallan todas, el recuadro.
+  const [failedIds, setFailedIds] = useState([])
+  const images = allImages.filter((image) => !failedIds.includes(image.id))
+  const markFailed = (id) => setFailedIds((current) => (current.includes(id) ? current : [...current, id]))
 
   if (images.length === 0) {
     return (
@@ -25,7 +29,7 @@ function ProductGallery({ images, alt, emptyText = '[imagen]' }) {
   return (
     <div className="gallery">
       <div className="main-image">
-        <img src={current.url} alt={`${alt}, foto ${images.indexOf(current) + 1} de ${images.length}`} decoding="async" />
+        <img src={current.url} alt={`${alt}, foto ${images.indexOf(current) + 1} de ${images.length}`} decoding="async" onError={() => markFailed(current.id)} />
       </div>
       {images.length > 1 && (
         <div className="thumbs">
@@ -38,7 +42,7 @@ function ProductGallery({ images, alt, emptyText = '[imagen]' }) {
               aria-pressed={index === selected}
               onClick={() => setSelected(index)}
             >
-              <img src={image.thumbnailUrl} alt="" loading="lazy" />
+              <img src={image.thumbnailUrl} alt="" loading="lazy" onError={() => markFailed(image.id)} />
             </button>
           ))}
         </div>
