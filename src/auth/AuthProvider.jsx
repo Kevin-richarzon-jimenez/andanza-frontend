@@ -2,12 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AuthContext } from './AuthContext.js'
 import { clearSession, onSessionChange, readSession, saveSession } from './session.js'
 import * as authApi from '../api/auth.js'
+import { queryClient } from '../api/queryClient.js'
 
 function AuthProvider({ children }) {
   const [session, setSession] = useState(readSession)
 
   // El cliente de la API descarta la sesión cuando el token vence: aquí se refleja en el estado.
-  useEffect(() => onSessionChange(() => setSession(readSession())), [])
+  // Al cambiar de sesión se vacía la caché de consultas, para que nadie vea datos de la cuenta anterior.
+  useEffect(() => onSessionChange(() => {
+    setSession(readSession())
+    queryClient.resetQueries()
+  }), [])
 
   const login = useCallback(async (credentials) => {
     const data = await authApi.login(credentials)

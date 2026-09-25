@@ -1,0 +1,30 @@
+.server-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px var(--content-pad);
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.server-banner-spinner {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: server-banner-spin 0.8s linear infinite;
+}
+
+@keyframes server-banner-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .server-banner-spinner { animation-duration: 2.4s; }
+}
