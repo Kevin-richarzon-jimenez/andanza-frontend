@@ -400,6 +400,9 @@ function ProductView({ product }) {
 function ProductDetail() {
   const { id } = useParams()
   const { data: product, error, reload } = useApiData(() => getProduct(id), `product:${id}`)
+  // Los comentarios solo necesitan el id de la URL: se piden a la vez que el producto, no después.
+  // ProductView usa la misma consulta y la encuentra ya en caché.
+  useApiData(() => listProductComments(id), `comments:${id}`)
   useDocumentTitle(product?.id === id ? product.name : null)
 
   if (error) {
