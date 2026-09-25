@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavorites } from '../favorites/useFavorites.js'
 import { formatCOP } from '../utils/formatCurrency.js'
@@ -10,12 +11,15 @@ function ProductCard({ product }) {
   const href = `/products/${product.id}`
   const soldOut = product.variants.every((variant) => variant.stock === 0)
   const cover = coverImage(product)
+  // Si la foto no llega (red caída, archivo borrado), se muestra el recuadro en vez del ícono de imagen rota.
+  const [failedUrl, setFailedUrl] = useState(null)
+  const showPhoto = cover && cover.thumbnailUrl !== failedUrl
 
   return (
     <article className="product-card">
-      {cover ? (
+      {showPhoto ? (
         <Link to={href} className="card-image" aria-label={product.name} tabIndex={-1}>
-          <img src={cover.thumbnailUrl} alt="" loading="lazy" decoding="async" />
+          <img src={cover.thumbnailUrl} alt="" loading="lazy" decoding="async" onError={() => setFailedUrl(cover.thumbnailUrl)} />
         </Link>
       ) : (
         <Link to={href} className="placeholder">
