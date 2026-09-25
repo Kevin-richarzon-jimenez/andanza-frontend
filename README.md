@@ -42,11 +42,11 @@ npm run lint
 - `App.jsx` — define todas las rutas de la aplicación; las de `/account` exigen sesión.
 - `index.css` — reset, variables de diseño (colores, tipografía, espaciados) y estilos compartidos entre muchas páginas/componentes.
 - `api/` — un módulo por recurso del backend (`catalog`, `cart`, `favorites`, ...) sobre `client.js`, que agrega el token, pone un límite de tiempo a cada petición, normaliza los errores (`ApiError`) y maneja la sesión vencida. `queryClient.js` configura la caché de consultas (TanStack Query) y los reintentos.
-- `auth/` — sesión (token y usuario en `sessionStorage`: sobrevive a recargar, se borra al cerrar la pestaña), `AuthProvider`, `RequireAuth` (páginas de `/account`), `RequireAdmin` (páginas de `/admin`) y `AuthPromptProvider`: para acciones que piden cuenta (favoritos, comentar) abre un popup con `useAuthPrompt().requireLogin(mensaje)` en vez de sacar al usuario de la página, y tras iniciar sesión o registrarse lo devuelve a donde estaba.
+- `auth/` — sesión (token y usuario en `sessionStorage`: sobrevive a recargar, se borra al cerrar la pestaña), `AuthProvider`, `RequireAuth` (páginas de `/account`), `RequireAdmin` (páginas del panel de gestión, `/admin`), `roles.js` (quién es personal interno y cómo se llama cada rol) y `useLogout` (cerrar sesión con confirmación) y `AuthPromptProvider`: para acciones que piden cuenta (favoritos, comentar) abre un popup con `useAuthPrompt().requireLogin(mensaje)` en vez de sacar al usuario de la página, y tras iniciar sesión o registrarse lo devuelve a donde estaba.
 - `confirm/` — `ConfirmProvider` y `useConfirm()`: `await confirm({ title, message, confirmLabel })` abre un diálogo y devuelve `true` o `false`. Se usa antes de las acciones que no se deshacen con otro clic: cerrar sesión, eliminar una dirección, quitar un producto del carrito y vaciarlo.
 - `cart/` y `favorites/` — estado global con su proveedor y su hook (`useCart`, `useFavorites`). El carrito vive en `localStorage`; los favoritos, en el backend.
 - `hooks/` y `utils/` — `useApiData(loader, key)` para cargar datos (con caché: al volver a una pantalla se ve al instante y se actualiza por detrás; estados de carga y error), `useListParams` para guardar filtros y página de un listado en la URL, `useDebouncedValue`, `useDocumentTitle` `imageResize` y `productImages` (fotos por color) y utilidades de formato (moneda, fecha, errores de formulario).
-- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AdminLayout`, `AuthLayout`, `ProductCard`, `Pagination`, `Stars`, `Review`, `ReviewSummary` (promedio y distribución de calificaciones), `EmptyState`, `Skeleton` (marcadores de carga), `ProductGallery` (fotos de la ficha), `ServerStatusBanner` (aviso de servidor despertando), `ScrollToTop` y `RouteTitle` (scroll y título de la pestaña al cambiar de ruta), `Modal` (base de los diálogos: `AuthPromptDialog`, `ConfirmDialog`), `Select` (lista desplegable con el estilo de la página y navegación por teclado). Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
+- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AdminLayout` (la carcasa del panel de gestión), `AuthLayout`, `UserMenu` (menú desplegable del avatar, en la tienda y en el panel), `Icons`, `ProductCard`, `Pagination`, `Stars`, `Review`, `ReviewSummary` (promedio y distribución de calificaciones), `EmptyState`, `Skeleton` (marcadores de carga), `ProductGallery` (fotos de la ficha), `ServerStatusBanner` (aviso de servidor despertando), `ScrollToTop` y `RouteTitle` (scroll y título de la pestaña al cambiar de ruta), `Modal` (base de los diálogos: `AuthPromptDialog`, `ConfirmDialog`), `Select` (lista desplegable con el estilo de la página y navegación por teclado). Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
 
 ### Imágenes de los productos
 
@@ -57,9 +57,12 @@ Cada producto tiene fotos **por color** (hasta 5 por color; la primera es la por
 Categoría, precio, color y talla se marcan como un borrador y se aplican con **"Aplicar filtros"** (o Enter en los campos de precio): elegir varias opciones seguidas cuesta una sola consulta. Lo aplicado vive en la URL (se puede compartir y "atrás" vuelve al conjunto anterior). El orden sí cambia al instante.
 - `pages/` — una carpeta/archivo por pantalla (`Home`, `Catalog`, `ProductDetail`, `Cart`, y las subcarpetas `account/`, `admin/`, `auth/`, `info/`).
 
-## Panel de administración
+## Panel de gestión
 
-En `/admin`, solo para cuentas con rol de administrador (a quienes les aparece el enlace "Panel de administración" en "Mi cuenta"):
+Es un sitio aparte dentro de la misma aplicación, en `/admin`: no comparte con la tienda el encabezado, el pie ni los menús. Tiene su menú lateral oscuro, su barra superior y una paleta más sobria (`AdminLayout.css`). Es para el **personal interno** (hoy, las cuentas de administrador):
+
+- **Cómo se entra:** en la tienda, con sesión, el avatar del encabezado abre un menú con *Mi perfil*, *Ir al panel de gestión* (solo lo ven quienes son personal interno) y *Cerrar sesión*. Dentro del panel, el menú del avatar tiene *Mi perfil* (sus datos y el cambio de contraseña, sin salir de Gestión), *Ir a la tienda* y *Cerrar sesión*.
+- **Nombres:** *Tienda* es lo que ve el cliente; *Gestión* es el panel; *equipo* son quienes trabajan en él.
 
 - **Resumen:** totales y las variantes con poco stock.
 - **Productos:** listado con foto, búsqueda y filtro por categoría, crear (con sus variantes), editar, ajustar el stock de cada variante, agregar variantes, **subir las imágenes de cada color** y eliminar.
@@ -68,7 +71,7 @@ En `/admin`, solo para cuentas con rol de administrador (a quienes les aparece e
 - **Usuarios:** buscar, dar o quitar el rol de administrador y bloquear o desbloquear cuentas. No permite cambiar la propia cuenta.
 - **Mensajes:** los del formulario de contacto, con un enlace para responder por correo.
 
-Las acciones que no se deshacen con otro clic piden confirmación. `RequireAdmin` solo decide qué mostrar: la seguridad real está en el backend, que responde `403` a cualquier petición de administración de alguien que no lo sea. El rol se guarda en la sesión al iniciar sesión, así que quien recibe el rol debe cerrar sesión y volver a entrar para ver el enlace. La primera cuenta de administrador se crea como explica el README del backend; después se puede dar el rol desde "Usuarios".
+Las acciones que no se deshacen con otro clic piden confirmación. `RequireAdmin` solo decide qué mostrar: la seguridad real está en el backend, que responde `403` a cualquier petición de administración de alguien que no lo sea. El rol se guarda en la sesión al iniciar sesión, así que quien recibe el rol debe cerrar sesión y volver a entrar para ver el acceso al panel. La primera cuenta de administrador se crea como explica el README del backend; después se puede dar el rol desde "Usuarios".
 
 ## Pendiente del backend
 
