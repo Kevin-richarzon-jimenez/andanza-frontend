@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApiData } from '../../hooks/useApiData.js'
 import { listCategories, listProducts } from '../../api/catalog.js'
 import { listAdminComments, listAdminMessages, listAdminUsers } from '../../api/admin.js'
+import PageHeader from '../../components/admin/PageHeader.jsx'
 import './admin-shared.css'
 
 const LOW_STOCK = 5
@@ -38,7 +39,7 @@ function Dashboard() {
 
   return (
     <>
-      <div className="admin-header"><h1>Resumen</h1></div>
+      <PageHeader title="Resumen" />
 
       {failed && (
         <div className="page-status" role="alert">

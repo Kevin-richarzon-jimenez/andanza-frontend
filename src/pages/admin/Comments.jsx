@@ -7,6 +7,8 @@ import { useApiData } from '../../hooks/useApiData.js'
 import { useListParams } from '../../hooks/useListParams.js'
 import { listAdminComments, setCommentVisibility } from '../../api/admin.js'
 import { formatDate } from '../../utils/formatDate.js'
+import PageHeader from '../../components/admin/PageHeader.jsx'
+import RowActions from '../../components/admin/RowActions.jsx'
 import './admin-shared.css'
 
 const PAGE_SIZE = 10
@@ -42,7 +44,7 @@ function AdminComments() {
 
   return (
     <>
-      <div className="admin-header"><h1>Comentarios</h1></div>
+      <PageHeader title="Comentarios" />
       <p className="admin-subtitle">Los comentarios se publican al instante. Aquí puedes ocultar los que no correspondan y volver a mostrarlos.</p>
 
       <div className="admin-toolbar">
@@ -91,11 +93,7 @@ function AdminComments() {
                     </td>
                     <td><span className={published ? 'status-badge on' : 'status-badge off'}>{published ? 'Publicado' : 'Oculto'}</span></td>
                     <td>
-                      <div className="admin-actions">
-                        <button type="button" className="btn btn-outline btn-small" disabled={busyId === comment.id} onClick={() => toggle(comment)}>
-                          {published ? 'Ocultar' : 'Mostrar'}
-                        </button>
-                      </div>
+                      <RowActions actions={[{ label: published ? 'Ocultar' : 'Mostrar', disabled: busyId === comment.id, onClick: () => toggle(comment) }]} />
                     </td>
                   </tr>
                 )
