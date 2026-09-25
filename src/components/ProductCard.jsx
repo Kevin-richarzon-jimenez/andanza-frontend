@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useFavorites } from '../favorites/useFavorites.js'
 import { formatCOP } from '../utils/formatCurrency.js'
+import { coverImage } from '../utils/productImages.js'
 import './ProductCard.css'
 
 function ProductCard({ product }) {
@@ -8,17 +9,24 @@ function ProductCard({ product }) {
   const wishlisted = isFavorite(product.id)
   const href = `/products/${product.id}`
   const soldOut = product.variants.every((variant) => variant.stock === 0)
+  const cover = coverImage(product)
 
   return (
     <article className="product-card">
-      <Link to={href} className="placeholder">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <circle cx="8.5" cy="10" r="1.4" />
-          <path d="M21 15l-5-5-4 4-3-3-6 6" />
-        </svg>
-        <span>[imagen]</span>
-      </Link>
+      {cover ? (
+        <Link to={href} className="card-image" aria-label={product.name} tabIndex={-1}>
+          <img src={cover.thumbnailUrl} alt="" loading="lazy" decoding="async" />
+        </Link>
+      ) : (
+        <Link to={href} className="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <circle cx="8.5" cy="10" r="1.4" />
+            <path d="M21 15l-5-5-4 4-3-3-6 6" />
+          </svg>
+          <span>[imagen]</span>
+        </Link>
+      )}
 
       {soldOut && <span className="badge">Agotado</span>}
 

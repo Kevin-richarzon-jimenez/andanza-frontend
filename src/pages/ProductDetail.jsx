@@ -4,6 +4,7 @@ import Stars from '../components/Stars.jsx'
 import Review from '../components/Review.jsx'
 import ReviewSummary from '../components/ReviewSummary.jsx'
 import ProductCard from '../components/ProductCard.jsx'
+import ProductGallery from '../components/ProductGallery.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import { useApiData } from '../hooks/useApiData.js'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
@@ -14,6 +15,7 @@ import { useFavorites } from '../favorites/useFavorites.js'
 import { getProduct, listProducts } from '../api/catalog.js'
 import { createComment, listProductComments } from '../api/comments.js'
 import { swatchFor } from '../utils/colors.js'
+import { coverImage, imagesOfColor } from '../utils/productImages.js'
 import { describeError } from '../utils/formErrors.js'
 import { formatCOP } from '../utils/formatCurrency.js'
 import { formatRating } from '../utils/formatRating.js'
@@ -126,6 +128,7 @@ function ProductView({ product }) {
       color: variant.color,
       size: variant.size,
       unitPrice: product.price,
+      imageUrl: (imagesOfColor(product, variant.color)[0] ?? coverImage(product))?.thumbnailUrl ?? null,
       quantity: 1,
     })
     setAddedToCart(true)
@@ -167,21 +170,12 @@ function ProductView({ product }) {
       <BackLink />
 
       <main className="product-body">
-        <div className="gallery">
-          <div className="main-image placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <rect x="3" y="5" width="18" height="14" rx="2" />
-              <circle cx="8.5" cy="10" r="1.4" />
-              <path d="M21 15l-5-5-4 4-3-3-6 6" />
-            </svg>
-            <span>[imagen principal]</span>
-          </div>
-          <div className="thumbs">
-            <div className="placeholder"><span>[img]</span></div>
-            <div className="placeholder"><span>[img]</span></div>
-            <div className="placeholder"><span>[img]</span></div>
-          </div>
-        </div>
+        <ProductGallery
+          key={color}
+          images={imagesOfColor(product, color)}
+          alt={`${product.name}, ${color}`}
+          emptyText={(product.images ?? []).length === 0 ? '[imagen]' : 'Sin fotos de este color'}
+        />
 
         <div className="product-info">
           <div className="product-brand">{product.brand.toUpperCase()}</div>

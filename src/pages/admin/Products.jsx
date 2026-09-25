@@ -8,7 +8,9 @@ import { useListParams } from '../../hooks/useListParams.js'
 import { deleteProduct } from '../../api/admin.js'
 import { listCategories, listProducts } from '../../api/catalog.js'
 import { formatCOP } from '../../utils/formatCurrency.js'
+import { coverImage } from '../../utils/productImages.js'
 import './admin-shared.css'
+import './ProductImages.css'
 
 const PAGE_SIZE = 10
 const LOW_STOCK = 5
@@ -111,11 +113,17 @@ function Products() {
             <tbody>
               {data.content.map((product) => {
                 const { total, className } = stockSummary(product)
+                const cover = coverImage(product)
                 return (
                   <tr key={product.id}>
                     <td>
-                      <Link className="strong" to={`/admin/products/${product.id}/edit`}>{product.name}</Link>
-                      <span className="muted">{product.brand}</span>
+                      <div className="product-cell">
+                        {cover ? <img className="admin-thumb" src={cover.thumbnailUrl} alt="" loading="lazy" /> : <span className="admin-thumb is-empty" aria-hidden="true" />}
+                        <div>
+                          <Link className="strong" to={`/admin/products/${product.id}/edit`}>{product.name}</Link>
+                          <span className="muted">{product.brand}</span>
+                        </div>
+                      </div>
                     </td>
                     <td>{product.category.name}</td>
                     <td className="num">{formatCOP(product.price)}</td>

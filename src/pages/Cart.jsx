@@ -59,7 +59,13 @@ function Cart() {
           ) : (
             items.map((item) => (
               <div className="cart-row" key={item.variantId}>
-                <Link to={`/products/${item.productId}`} className="placeholder"><span>[imagen]</span></Link>
+                {item.imageUrl ? (
+                  <Link to={`/products/${item.productId}`} className="cart-thumb" aria-label={item.name} tabIndex={-1}>
+                    <img src={item.imageUrl} alt="" loading="lazy" />
+                  </Link>
+                ) : (
+                  <Link to={`/products/${item.productId}`} className="placeholder"><span>[imagen]</span></Link>
+                )}
                 <div className="item-info">
                   <Link to={`/products/${item.productId}`} className="name">{item.name}</Link>
                   <div className="variant">Talla {item.size} · {item.color}</div>
