@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  height: max(420px, calc(100vh - 38px));
+  height: max(420px, 100vh);
   overflow: hidden;
   background: var(--bg-soft);
 }
