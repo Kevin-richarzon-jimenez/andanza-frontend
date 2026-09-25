@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import EmptyState from '../../components/EmptyState.jsx'
 import Select from '../../components/Select.jsx'
 import { useConfirm } from '../../confirm/useConfirm.js'
@@ -8,6 +8,7 @@ import { addVariant, createProduct, deleteProduct, updateProduct, updateStock } 
 import { getProduct, listCategories } from '../../api/catalog.js'
 import { COLOR_SWATCHES } from '../../utils/colors.js'
 import { describeError } from '../../utils/formErrors.js'
+import ProductImages from './ProductImages.jsx'
 import '../account-shared.css'
 import './admin-shared.css'
 
@@ -127,6 +128,7 @@ function AddVariantForm({ productId, onAdded }) {
 
 function ProductFields({ categories, product, onChanged }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const confirm = useConfirm()
   const [form, setForm] = useState({
     name: product?.name ?? '',
@@ -138,7 +140,7 @@ function ProductFields({ categories, product, onChanged }) {
   const [variants, setVariants] = useState([{ ...EMPTY_VARIANT }])
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState(location.state?.notice ?? '')
 
   const categoryOptions = [
     ...(product ? [] : [{ value: '', label: 'Elige una categoría' }]),
@@ -174,7 +176,8 @@ function ProductFields({ categories, product, onChanged }) {
           ...body,
           variants: variants.map((variant) => ({ color: variant.color, size: variant.size, stock: Number(variant.stock) })),
         })
-        navigate('/admin/products', { state: { notice: `«${created.name}» se creó correctamente.` } })
+        // Se abre su edición: las imágenes se agregan por color y necesitan que el producto ya exista.
+        navigate(`/admin/products/${created.id}/edit`, { state: { notice: `«${created.name}» se creó correctamente. Ahora puedes agregar sus imágenes.` } })
       }
     } catch (err) {
       setError(describeError(err))
@@ -296,6 +299,8 @@ function ProductFields({ categories, product, onChanged }) {
 
       {product && (
         <>
+          <ProductImages product={product} onChanged={onChanged} />
+
           <h2 className="admin-section-title">Variantes y stock</h2>
           <div className="admin-table-wrap" style={{ maxWidth: 640 }}>
             <table className="admin-table">

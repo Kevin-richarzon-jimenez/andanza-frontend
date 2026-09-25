@@ -71,7 +71,9 @@ function buildUrl(path, query) {
 export async function request(path, { method = 'GET', body, query, redirectOnExpired = true, signal } = {}, isRetry = false) {
   const token = getToken()
   const headers = {}
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  // Un FormData (subida de archivos) lo arma el navegador con su propio Content-Type y sus separadores.
+  const isFormData = body instanceof FormData
+  if (body !== undefined && !isFormData) headers['Content-Type'] = 'application/json'
   if (token) headers.Authorization = `Bearer ${token}`
 
   let response
@@ -79,7 +81,7 @@ export async function request(path, { method = 'GET', body, query, redirectOnExp
     response = await fetchWithTimeout(buildUrl(path, query), {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined || isFormData ? body : JSON.stringify(body),
     }, signal)
   } catch (error) {
     if (signal?.aborted) throw error
