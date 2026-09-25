@@ -1,28 +1,17 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth.js'
-import { useConfirm } from '../confirm/useConfirm.js'
+import { isStaff } from '../auth/roles.js'
+import { useLogout } from '../auth/useLogout.js'
 import { useFavorites } from '../favorites/useFavorites.js'
 import { listMyComments } from '../api/comments.js'
 import './AccountLayout.css'
 
 function AccountLayout() {
-  const { user, logout } = useAuth()
-  const confirm = useConfirm()
-  const navigate = useNavigate()
+  const { user } = useAuth()
+  const requestLogout = useLogout()
   const { favorites } = useFavorites()
   const [commentCount, setCommentCount] = useState(null)
-
-  async function handleLogout() {
-    const confirmed = await confirm({
-      title: '¿Cerrar sesión?',
-      message: 'Tendrás que iniciar sesión de nuevo para ver tus favoritos y tus direcciones.',
-      confirmLabel: 'Cerrar sesión',
-    })
-    if (!confirmed) return
-    navigate('/')
-    logout()
-  }
 
   useEffect(() => {
     let cancelled = false
@@ -58,10 +47,10 @@ function AccountLayout() {
           </li>
           <li><NavLink to="/account/orders">Mis pedidos <span aria-hidden="true">›</span></NavLink></li>
           <li><NavLink to="/account/change-password">Cambiar contraseña <span aria-hidden="true">›</span></NavLink></li>
-          {user?.role === 'ADMIN' && (
-            <li><NavLink to="/admin">Panel de administración <span aria-hidden="true">›</span></NavLink></li>
+          {isStaff(user) && (
+            <li><NavLink to="/admin">Panel de gestión <span aria-hidden="true">›</span></NavLink></li>
           )}
-          <li><button type="button" className="logout" onClick={handleLogout}>Cerrar sesión <span aria-hidden="true">›</span></button></li>
+          <li><button type="button" className="logout" onClick={requestLogout}>Cerrar sesión <span aria-hidden="true">›</span></button></li>
         </ul>
       </aside>
 

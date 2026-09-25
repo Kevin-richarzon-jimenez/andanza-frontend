@@ -23,7 +23,7 @@ function AuthPromptProvider({ children }) {
   // En el resto de páginas se avisa con el popup, sin sacar al usuario de donde está.
   useEffect(() => {
     setAuthRequiredHandler(() => {
-      if (location.pathname.startsWith('/account') || location.pathname.startsWith('/auth')) {
+      if (['/account', '/admin', '/auth'].some((prefix) => location.pathname.startsWith(prefix))) {
         navigate('/auth/login', { replace: true, state: { expired: true, from: location.state?.from ?? from } })
       } else {
         requireLogin('Tu sesión expiró. Inicia sesión de nuevo para continuar.')
