@@ -50,7 +50,7 @@ npm run lint
 
 ### Imágenes de los productos
 
-Cada producto tiene fotos **por color** (hasta 5 por color; la primera es la portada) y las tallas de un mismo color las comparten. En el panel, al editar un producto hay una galería por cada color, con arrastrar y soltar, "Portada" y eliminar. Al subir, el navegador reduce cada foto y la convierte a WebP en dos tamaños (1200 px para la ficha y 400 px para las tarjetas), así que una foto de varios MB queda en unos 100-200 KB (`utils/imageResize.js`). En la tienda, las tarjetas y el carrito usan la miniatura del color y la ficha cambia de galería al elegir otro color (`ProductGallery`); un producto o color sin fotos, o una foto que no carga, muestra el recuadro "[imagen]" en vez del ícono de imagen rota. Los archivos viven en Supabase Storage (ver el README del backend): si no está configurado, subir una imagen muestra que "las imágenes todavía no están configuradas en el servidor".
+Cada producto tiene fotos **por color** (hasta 5 por color; la primera es la portada) y las tallas de un mismo color las comparten. En el panel, dentro de cada color del producto (*Colores → el color*) está su galería, con arrastrar y soltar, "Portada" y eliminar. Al subir, el navegador reduce cada foto y la convierte a WebP en dos tamaños (1200 px para la ficha y 400 px para las tarjetas), así que una foto de varios MB queda en unos 100-200 KB (`utils/imageResize.js`). En la tienda, las tarjetas y el carrito usan la miniatura del color y la ficha cambia de galería al elegir otro color (`ProductGallery`); un producto o color sin fotos, o una foto que no carga, muestra el recuadro "[imagen]" en vez del ícono de imagen rota. Los archivos viven en Supabase Storage (ver el README del backend): si no está configurado, subir una imagen muestra que "las imágenes todavía no están configuradas en el servidor".
 
 ### Catálogo: filtros
 
@@ -65,17 +65,26 @@ Es un sitio aparte dentro de la misma aplicación, en `/admin`: no comparte con 
 - **Nombres:** *Tienda* es lo que ve el cliente; *Gestión* es el panel; *equipo* son quienes trabajan en él.
 
 - **Resumen:** totales y las variantes con poco stock.
-- **Productos:** listado con foto, búsqueda y filtro por categoría, crear (con sus variantes), editar, ajustar el stock de cada variante, agregar variantes, **subir las imágenes de cada color** y eliminar.
-- **Categorías:** crear y eliminar (no se elimina una con productos).
+- **Productos:** listado con foto, búsqueda y filtro por categoría. Cada producto se abre como un árbol de tres niveles: **producto → colores → un color**. Arriba va su resumen (foto, precio, stock total) y dos pestañas: *General* (sus datos y eliminarlo) y *Colores* (una tarjeta por color, con su portada, sus tallas y sus fotos; ahí también se agrega un color nuevo). Al abrir un color solo se ve y se edita lo de ese color: **sus fotos** (hasta 5, arrastrando o eligiendo) y **sus tallas con el stock de cada una**: cada talla tiene su "Editar" (el stock) y el botón "+ Agregar tallas" abre el formulario para sumar varias a la vez; en la pestaña Colores, "+ Agregar color" abre el suyo. El color y las tallas se eligen con fichas (con el tono del color a la vista) y un campo para escribir otro color u otras tallas: no se usan los desplegables nativos del navegador (`datalist`), porque no se pueden estilar y salen distintos en cada sistema. Se crea con sus datos y su primer color; las fotos se suben después, dentro de cada color. La dirección vieja `/admin/products/:id/edit` redirige al producto.
+- **Categorías:** crear (con el botón "+ Nueva categoría", que abre su formulario) y eliminar (no se elimina una con productos).
 - **Comentarios:** ver todos y ocultarlos o volver a mostrarlos.
 - **Usuarios:** buscar, dar o quitar el rol de administrador y bloquear o desbloquear cuentas. No permite cambiar la propia cuenta.
 - **Mensajes:** los del formulario de contacto, con un enlace para responder por correo.
+
+### Cómo se arma una pantalla del panel
+
+Todas las pantallas usan el mismo kit (`src/components/admin/`), para que se vean y se comporten igual:
+
+- **`PageHeader`:** el título y, a la derecha, las acciones de la pantalla. La de crear es siempre la primaria ("+ Nuevo producto", "+ Nueva categoría").
+- **`Button`:** el único botón del panel, con tres variantes: `primary` (la acción principal: crear, guardar), `secondary` (editar, cancelar) y `danger` (lo que borra). Con `to` es un enlace, con `href` uno externo y sin ninguno, un botón.
+- **`RowActions`:** las acciones de una fila de tabla, siempre en el mismo orden (Editar primero, Eliminar al final).
+- **`FormDialog` + `useFormDialog`:** **todo lo que sea crear o editar tiene su formulario aparte**: la lista solo lleva el botón que lo abre, y el formulario aparece en una ventana (o en su propia página, como el producto). Nunca pegado debajo de una tabla. El hook maneja abrir, guardar, cerrar y mostrar los errores del servidor; los campos empiezan limpios cada vez que se abre.
 
 Las acciones que no se deshacen con otro clic piden confirmación. `RequireAdmin` solo decide qué mostrar: la seguridad real está en el backend, que responde `403` a cualquier petición de administración de alguien que no lo sea. El rol se guarda en la sesión al iniciar sesión, así que quien recibe el rol debe cerrar sesión y volver a entrar para ver el acceso al panel. La primera cuenta de administrador se crea como explica el README del backend; después se puede dar el rol desde "Usuarios".
 
 ## Pendiente del backend
 
-Pantallas que hoy muestran un aviso o un estado vacío porque el backend todavía no expone lo necesario: pedidos y pago del carrito, recuperar contraseña, editar datos del perfil, editar o borrar comentarios propios, descuentos y calificaciones de producto, y los filtros por marca y género.
+Pantallas que hoy muestran un aviso o un estado vacío porque el backend todavía no expone lo necesario: pedidos y pago del carrito, recuperar contraseña, editar datos del perfil, editar o borrar comentarios propios, editar categorías, eliminar tallas o colores de un producto, descuentos y calificaciones de producto, y los filtros por marca y género.
 
 ## Despliegue
 

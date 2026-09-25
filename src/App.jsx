@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import AccountLayout from './components/AccountLayout.jsx'
 import AuthLayout from './components/AuthLayout.jsx'
@@ -37,7 +37,11 @@ import Terms from './pages/info/Terms.jsx'
 // Las pantallas del panel se descargan solo cuando alguien entra al panel: el resto de los visitantes no las necesita.
 const Dashboard = lazy(() => import('./pages/admin/Dashboard.jsx'))
 const AdminProducts = lazy(() => import('./pages/admin/Products.jsx'))
-const ProductForm = lazy(() => import('./pages/admin/ProductForm.jsx'))
+const ProductNew = lazy(() => import('./pages/admin/product/ProductNew.jsx'))
+const ProductLayout = lazy(() => import('./pages/admin/product/ProductLayout.jsx'))
+const ProductGeneral = lazy(() => import('./pages/admin/product/ProductGeneral.jsx'))
+const ProductColors = lazy(() => import('./pages/admin/product/ProductColors.jsx'))
+const ProductColor = lazy(() => import('./pages/admin/product/ProductColor.jsx'))
 const Categories = lazy(() => import('./pages/admin/Categories.jsx'))
 const AdminComments = lazy(() => import('./pages/admin/Comments.jsx'))
 const Users = lazy(() => import('./pages/admin/Users.jsx'))
@@ -81,8 +85,13 @@ function App() {
         <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<AdminProducts />} />
-          <Route path="products/new" element={<ProductForm />} />
-          <Route path="products/:id/edit" element={<ProductForm />} />
+          <Route path="products/new" element={<ProductNew />} />
+          <Route path="products/:id" element={<ProductLayout />}>
+            <Route index element={<ProductGeneral />} />
+            <Route path="colors" element={<ProductColors />} />
+            <Route path="colors/:color" element={<ProductColor />} />
+          </Route>
+          <Route path="products/:id/edit" element={<Navigate to=".." replace relative="path" />} />
           <Route path="categories" element={<Categories />} />
           <Route path="comments" element={<AdminComments />} />
           <Route path="users" element={<Users />} />

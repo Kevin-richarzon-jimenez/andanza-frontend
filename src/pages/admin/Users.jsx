@@ -5,6 +5,8 @@ import { useConfirm } from '../../confirm/useConfirm.js'
 import { useApiData } from '../../hooks/useApiData.js'
 import { useListParams } from '../../hooks/useListParams.js'
 import { listAdminUsers, updateAdminUser } from '../../api/admin.js'
+import PageHeader from '../../components/admin/PageHeader.jsx'
+import RowActions from '../../components/admin/RowActions.jsx'
 import './admin-shared.css'
 
 const PAGE_SIZE = 10
@@ -65,7 +67,7 @@ function Users() {
 
   return (
     <>
-      <div className="admin-header"><h1>Usuarios</h1></div>
+      <PageHeader title="Usuarios" />
 
       {notice && <p className="admin-notice" role="status">{notice}</p>}
 
@@ -112,18 +114,10 @@ function Users() {
                       {isMe ? (
                         <span className="muted" style={{ textAlign: 'right' }}>Tu cuenta</span>
                       ) : (
-                        <div className="admin-actions">
-                          <button type="button" className="btn btn-outline btn-small" onClick={() => toggleRole(user)}>
-                            {user.role === 'ADMIN' ? 'Quitar admin' : 'Hacer admin'}
-                          </button>
-                          <button
-                            type="button"
-                            className={user.accountStatus === 'BLOCKED' ? 'btn btn-outline btn-small' : 'btn btn-outline btn-small btn-danger'}
-                            onClick={() => toggleBlocked(user)}
-                          >
-                            {user.accountStatus === 'BLOCKED' ? 'Desbloquear' : 'Bloquear'}
-                          </button>
-                        </div>
+                        <RowActions actions={[
+                          { key: 'role', label: user.role === 'ADMIN' ? 'Quitar admin' : 'Hacer admin', onClick: () => toggleRole(user) },
+                          { key: 'blocked', label: user.accountStatus === 'BLOCKED' ? 'Desbloquear' : 'Bloquear', variant: user.accountStatus === 'BLOCKED' ? 'secondary' : 'danger', onClick: () => toggleBlocked(user) },
+                        ]} />
                       )}
                     </td>
                   </tr>
