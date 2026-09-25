@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import Pagination from '../components/Pagination.jsx'
 import Select from '../components/Select.jsx'
+import { ProductGridSkeleton } from '../components/Skeleton.jsx'
 import { useApiData } from '../hooks/useApiData.js'
 import { getFilterOptions, listCategories, listProducts } from '../api/catalog.js'
 import { swatchFor } from '../utils/colors.js'
@@ -17,6 +18,7 @@ const SORTS = [
   { value: 'price_asc', label: 'Precio: menor a mayor' },
   { value: 'price_desc', label: 'Precio: mayor a menor' },
 ]
+const EMPTY_DRAFT = { category: '', colors: [], sizes: [], minPrice: '', maxPrice: '' }
 
 function toggleValue(list, value) {
   return list.includes(value) ? list.filter((item) => item !== value) : [...list, value]
@@ -27,54 +29,32 @@ function parsePrice(text) {
   return text.trim() !== '' && Number.isFinite(number) && number >= 0 ? Math.round(number) : null
 }
 
-// Precio desde/hasta: se escribe libremente y se aplica al salir del campo o con Enter (no en cada tecla).
-function PriceFilter({ minPrice, maxPrice, bounds, onApply }) {
-  const [min, setMin] = useState(minPrice)
-  const [max, setMax] = useState(maxPrice)
-  const [error, setError] = useState('')
-  const [synced, setSynced] = useState({ minPrice, maxPrice })
+// Dos borradores son iguales si eligen lo mismo, sin importar el orden en que se marcaron color y talla.
+function filterKey(filters) {
+  return JSON.stringify([filters.category, [...filters.colors].sort(), [...filters.sizes].sort(), filters.minPrice, filters.maxPrice])
+}
 
-  // Si la URL cambia por otro lado (limpiar filtros, un enlace), los campos se ponen al día.
-  if (synced.minPrice !== minPrice || synced.maxPrice !== maxPrice) {
-    setSynced({ minPrice, maxPrice })
-    setMin(minPrice)
-    setMax(maxPrice)
-    setError('')
-  }
+function FilterNote({ onRetry }) {
+  return (
+    <p className="filter-note">
+      No pudimos cargar esta opción. <button type="button" className="filter-retry" onClick={onRetry}>Reintentar</button>
+    </p>
+  )
+}
 
-  function apply() {
-    const low = parsePrice(min)
-    const high = parsePrice(max)
-    if (low !== null && high !== null && low > high) {
-      setError('El mínimo no puede ser mayor al máximo')
-      return
-    }
-    setError('')
-    if (String(low ?? '') !== minPrice || String(high ?? '') !== maxPrice) {
-      onApply({ minPrice: low ?? '', maxPrice: high ?? '' })
-    }
-  }
-
-  function handleBlur(event) {
-    if (!event.currentTarget.contains(event.relatedTarget)) apply()
-  }
-
-  function handleKeyDown(event) {
-    if (event.key === 'Enter') apply()
-  }
-
+function PriceFilter({ draft, bounds, error, onChange }) {
   const hint = (value, fallback) => (value != null ? formatCOP(value) : fallback)
 
   return (
-    <div className="price-filter" onBlur={handleBlur} onKeyDown={handleKeyDown}>
+    <div className="price-filter">
       <div className="price-fields">
         <label>
           Desde
-          <input type="number" min="0" step="1000" inputMode="numeric" value={min} placeholder={hint(bounds?.minPrice, 'Mínimo')} onChange={(event) => setMin(event.target.value)} />
+          <input type="number" min="0" step="1000" inputMode="numeric" value={draft.minPrice} placeholder={hint(bounds?.minPrice, 'Mínimo')} onChange={(event) => onChange({ minPrice: event.target.value })} />
         </label>
         <label>
           Hasta
-          <input type="number" min="0" step="1000" inputMode="numeric" value={max} placeholder={hint(bounds?.maxPrice, 'Máximo')} onChange={(event) => setMax(event.target.value)} />
+          <input type="number" min="0" step="1000" inputMode="numeric" value={draft.maxPrice} placeholder={hint(bounds?.maxPrice, 'Máximo')} onChange={(event) => onChange({ maxPrice: event.target.value })} />
         </label>
       </div>
       {error && <div className="field-error" role="alert">{error}</div>}
@@ -82,77 +62,104 @@ function PriceFilter({ minPrice, maxPrice, bounds, onApply }) {
   )
 }
 
-// Cada cambio se aplica al instante: los filtros viven en la URL (se pueden compartir y el botón atrás funciona).
-function Filters({ applied, categories, options, hasFilters, onChange, onClear }) {
+// Lo que se marca aquí es un borrador: la lista se actualiza al pulsar "Aplicar filtros" (o Enter en el precio),
+// así elegir varias opciones seguidas cuesta una sola consulta. Los filtros aplicados viven en la URL
+// (se pueden compartir y el botón atrás funciona).
+function Filters({ draft, categories, options, hasFilters, dirty, priceError, onDraftChange, onApply, onClear }) {
+  const colors = options.data?.colors
+  const sizes = options.data?.sizes
+
   return (
     <aside className="catalog-filters">
-      <h5>Categoría</h5>
-      <label className="filter-row">
-        <input type="radio" name="category" checked={applied.category === ''} onChange={() => onChange({ category: '' })} />
-        Todas
-      </label>
-      {categories.map((item) => (
-        <label className="filter-row" key={item.id}>
-          <input type="radio" name="category" checked={applied.category === item.name} onChange={() => onChange({ category: item.name })} />
-          {item.name}
+      <form onSubmit={onApply}>
+        <h5>Categoría</h5>
+        <label className="filter-row">
+          <input type="radio" name="category" checked={draft.category === ''} onChange={() => onDraftChange({ category: '' })} />
+          Todas
         </label>
-      ))}
-
-      <h5>Precio</h5>
-      <PriceFilter
-        minPrice={applied.minPrice}
-        maxPrice={applied.maxPrice}
-        bounds={options}
-        onApply={onChange}
-      />
-
-      {options?.colors.length > 0 && (
-        <>
-          <h5>Color</h5>
-          <div className="color-options">
-            {options.colors.map((name) => {
-              const swatch = swatchFor(name)
-              const selected = applied.colors.includes(name)
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  className={selected ? 'swatch selected' : 'swatch'}
-                  style={{ background: swatch.hex, border: swatch.outline ? '1px solid #ddd' : undefined }}
-                  aria-label={name}
-                  aria-pressed={selected}
-                  title={name}
-                  onClick={() => onChange({ color: toggleValue(applied.colors, name) })}
-                />
-              )
-            })}
+        {categories.data?.map((item) => (
+          <label className="filter-row" key={item.id}>
+            <input type="radio" name="category" checked={draft.category === item.name} onChange={() => onDraftChange({ category: item.name })} />
+            {item.name}
+          </label>
+        ))}
+        {!categories.data && categories.error && <FilterNote onRetry={categories.reload} />}
+        {!categories.data && !categories.error && (
+          <div className="filter-skeleton" aria-hidden="true">
+            <div className="skeleton skeleton-line" />
+            <div className="skeleton skeleton-line" />
+            <div className="skeleton skeleton-line" />
           </div>
-        </>
-      )}
+        )}
 
-      {options?.sizes.length > 0 && (
-        <>
-          <h5>Talla</h5>
-          <div className="size-options">
-            {options.sizes.map((size) => {
-              const selected = applied.sizes.includes(size)
-              return (
-                <button
-                  key={size}
-                  type="button"
-                  className={selected ? 'pill selected' : 'pill'}
-                  aria-pressed={selected}
-                  onClick={() => onChange({ size: toggleValue(applied.sizes, size) })}
-                >
-                  {size}
-                </button>
-              )
-            })}
-          </div>
-        </>
-      )}
+        <h5>Precio</h5>
+        <PriceFilter draft={draft} bounds={options.data} error={priceError} onChange={onDraftChange} />
 
-      {hasFilters && <button type="button" className="clear-filters" onClick={onClear}>Limpiar filtros</button>}
+        {colors?.length !== 0 && (
+          <>
+            <h5>Color</h5>
+            {colors && (
+              <div className="color-options">
+                {colors.map((name) => {
+                  const swatch = swatchFor(name)
+                  const selected = draft.colors.includes(name)
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      className={selected ? 'swatch selected' : 'swatch'}
+                      style={{ background: swatch.hex, border: swatch.outline ? '1px solid #ddd' : undefined }}
+                      aria-label={name}
+                      aria-pressed={selected}
+                      title={name}
+                      onClick={() => onDraftChange({ colors: toggleValue(draft.colors, name) })}
+                    />
+                  )
+                })}
+              </div>
+            )}
+            {!colors && options.error && <FilterNote onRetry={options.reload} />}
+            {!colors && !options.error && (
+              <div className="color-options" aria-hidden="true">
+                {Array.from({ length: 5 }, (_, index) => <span key={index} className="skeleton skeleton-swatch" />)}
+              </div>
+            )}
+          </>
+        )}
+
+        {sizes?.length !== 0 && (
+          <>
+            <h5>Talla</h5>
+            {sizes && (
+              <div className="size-options">
+                {sizes.map((size) => {
+                  const selected = draft.sizes.includes(size)
+                  return (
+                    <button
+                      key={size}
+                      type="button"
+                      className={selected ? 'pill selected' : 'pill'}
+                      aria-pressed={selected}
+                      onClick={() => onDraftChange({ sizes: toggleValue(draft.sizes, size) })}
+                    >
+                      {size}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            {!sizes && options.error && <FilterNote onRetry={options.reload} />}
+            {!sizes && !options.error && (
+              <div className="size-options" aria-hidden="true">
+                {Array.from({ length: 8 }, (_, index) => <span key={index} className="skeleton skeleton-pill" />)}
+              </div>
+            )}
+          </>
+        )}
+
+        <button type="submit" className="btn btn-fill filter-apply" disabled={!dirty}>Aplicar filtros</button>
+        {(hasFilters || dirty) && <button type="button" className="clear-filters" onClick={onClear}>Limpiar filtros</button>}
+      </form>
     </aside>
   )
 }
@@ -172,6 +179,19 @@ function Catalog() {
   }
   const hasFilters = Boolean(applied.category || applied.colors.length || applied.sizes.length || applied.minPrice || applied.maxPrice)
 
+  const appliedKey = filterKey(applied)
+  const [draft, setDraft] = useState(() => ({ category: applied.category, colors: applied.colors, sizes: applied.sizes, minPrice: applied.minPrice, maxPrice: applied.maxPrice }))
+  const [syncedKey, setSyncedKey] = useState(appliedKey)
+  const [priceError, setPriceError] = useState('')
+  const dirty = filterKey(draft) !== appliedKey
+
+  // Si la URL cambia por otro lado (atrás, un enlace, otra pestaña de historial), el borrador se pone al día.
+  if (syncedKey !== appliedKey) {
+    setSyncedKey(appliedKey)
+    setDraft({ category: applied.category, colors: applied.colors, sizes: applied.sizes, minPrice: applied.minPrice, maxPrice: applied.maxPrice })
+    setPriceError('')
+  }
+
   const query = {
     category: applied.category,
     colors: applied.colors,
@@ -184,9 +204,9 @@ function Catalog() {
     size: PAGE_SIZE,
   }
 
-  const { data: categories } = useApiData(listCategories, 'categories')
-  const { data: options } = useApiData(getFilterOptions, 'filter-options')
-  const { data: page, error, loading, reload } = useApiData(() => listProducts(query), params.toString())
+  const categories = useApiData(listCategories, 'categories')
+  const options = useApiData(getFilterOptions, 'filter-options')
+  const { data: page, error, loading, reload } = useApiData(({ signal }) => listProducts(query, { signal }), `catalog:${params}`)
 
   function updateParams(changes) {
     const next = new URLSearchParams(params)
@@ -203,8 +223,32 @@ function Catalog() {
     updateParams({ ...changes, page: '' })
   }
 
+  function changeDraft(changes) {
+    setDraft((current) => ({ ...current, ...changes }))
+  }
+
+  function applyFilters(event) {
+    event.preventDefault()
+    if (!dirty) return
+    const low = parsePrice(draft.minPrice)
+    const high = parsePrice(draft.maxPrice)
+    if (low !== null && high !== null && low > high) {
+      setPriceError('El mínimo no puede ser mayor al máximo')
+      return
+    }
+    setPriceError('')
+    changeFilters({ category: draft.category, color: draft.colors, size: draft.sizes, minPrice: low ?? '', maxPrice: high ?? '' })
+  }
+
   function clearFilters() {
-    changeFilters({ category: '', color: [], size: [], minPrice: '', maxPrice: '' })
+    setDraft(EMPTY_DRAFT)
+    setPriceError('')
+    if (hasFilters) changeFilters({ category: '', color: [], size: [], minPrice: '', maxPrice: '' })
+  }
+
+  function changePage(next) {
+    updateParams({ page: next > 0 ? String(next) : '' })
+    window.scrollTo(0, 0)
   }
 
   const products = page?.content ?? []
@@ -233,11 +277,14 @@ function Catalog() {
 
       <div className="catalog-body">
         <Filters
-          applied={applied}
-          categories={categories ?? []}
+          draft={draft}
+          categories={categories}
           options={options}
           hasFilters={hasFilters}
-          onChange={changeFilters}
+          dirty={dirty}
+          priceError={priceError}
+          onDraftChange={changeDraft}
+          onApply={applyFilters}
           onClear={clearFilters}
         />
 
@@ -249,7 +296,7 @@ function Catalog() {
             </div>
           )}
 
-          {!error && !page && <div className="page-status">Cargando productos...</div>}
+          {!error && !page && <ProductGridSkeleton count={PAGE_SIZE} className="catalog-grid" />}
 
           {!error && page && products.length === 0 && (
             <EmptyState
@@ -277,7 +324,7 @@ function Catalog() {
               <Pagination
                 page={applied.page}
                 totalPages={totalPages}
-                onChange={(next) => updateParams({ page: next > 0 ? String(next) : '' })}
+                onChange={changePage}
               />
             </>
           )}
