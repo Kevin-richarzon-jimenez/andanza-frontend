@@ -45,8 +45,12 @@ npm run lint
 - `auth/` — sesión (token y usuario en `sessionStorage`: sobrevive a recargar, se borra al cerrar la pestaña), `AuthProvider`, `RequireAuth` (páginas de `/account`), `RequireAdmin` (páginas de `/admin`) y `AuthPromptProvider`: para acciones que piden cuenta (favoritos, comentar) abre un popup con `useAuthPrompt().requireLogin(mensaje)` en vez de sacar al usuario de la página, y tras iniciar sesión o registrarse lo devuelve a donde estaba.
 - `confirm/` — `ConfirmProvider` y `useConfirm()`: `await confirm({ title, message, confirmLabel })` abre un diálogo y devuelve `true` o `false`. Se usa antes de las acciones que no se deshacen con otro clic: cerrar sesión, eliminar una dirección, quitar un producto del carrito y vaciarlo.
 - `cart/` y `favorites/` — estado global con su proveedor y su hook (`useCart`, `useFavorites`). El carrito vive en `localStorage`; los favoritos, en el backend.
-- `hooks/` y `utils/` — `useApiData(loader, key)` para cargar datos (con caché: al volver a una pantalla se ve al instante y se actualiza por detrás; estados de carga y error), `useListParams` para guardar filtros y página de un listado en la URL, `useDebouncedValue`, `useDocumentTitle` y utilidades de formato (moneda, fecha, errores de formulario).
-- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AdminLayout`, `AuthLayout`, `ProductCard`, `Pagination`, `Stars`, `Review`, `ReviewSummary` (promedio y distribución de calificaciones), `EmptyState`, `Skeleton` (marcadores de carga), `ServerStatusBanner` (aviso de servidor despertando), `ScrollToTop` y `RouteTitle` (scroll y título de la pestaña al cambiar de ruta), `Modal` (base de los diálogos: `AuthPromptDialog`, `ConfirmDialog`), `Select` (lista desplegable con el estilo de la página y navegación por teclado). Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
+- `hooks/` y `utils/` — `useApiData(loader, key)` para cargar datos (con caché: al volver a una pantalla se ve al instante y se actualiza por detrás; estados de carga y error), `useListParams` para guardar filtros y página de un listado en la URL, `useDebouncedValue`, `useDocumentTitle` `imageResize` y `productImages` (fotos por color) y utilidades de formato (moneda, fecha, errores de formulario).
+- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AdminLayout`, `AuthLayout`, `ProductCard`, `Pagination`, `Stars`, `Review`, `ReviewSummary` (promedio y distribución de calificaciones), `EmptyState`, `Skeleton` (marcadores de carga), `ProductGallery` (fotos de la ficha), `ServerStatusBanner` (aviso de servidor despertando), `ScrollToTop` y `RouteTitle` (scroll y título de la pestaña al cambiar de ruta), `Modal` (base de los diálogos: `AuthPromptDialog`, `ConfirmDialog`), `Select` (lista desplegable con el estilo de la página y navegación por teclado). Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
+
+### Imágenes de los productos
+
+Cada producto tiene fotos **por color** (hasta 5 por color; la primera es la portada) y las tallas de un mismo color las comparten. En el panel, al editar un producto hay una galería por cada color, con arrastrar y soltar, "Portada" y eliminar. Al subir, el navegador reduce cada foto y la convierte a WebP en dos tamaños (1200 px para la ficha y 400 px para las tarjetas), así que una foto de varios MB queda en unos 100-200 KB (`utils/imageResize.js`). En la tienda, las tarjetas y el carrito usan la miniatura del color y la ficha cambia de galería al elegir otro color (`ProductGallery`); un producto o color sin fotos sigue mostrando el recuadro "[imagen]". Los archivos viven en Supabase Storage (ver el README del backend): si no está configurado, subir una imagen muestra que "las imágenes todavía no están configuradas en el servidor".
 
 ### Catálogo: filtros
 
@@ -58,7 +62,7 @@ Categoría, precio, color y talla se marcan como un borrador y se aplican con **
 En `/admin`, solo para cuentas con rol de administrador (a quienes les aparece el enlace "Panel de administración" en "Mi cuenta"):
 
 - **Resumen:** totales y las variantes con poco stock.
-- **Productos:** listado con búsqueda y filtro por categoría, crear (con sus variantes), editar, ajustar el stock de cada variante, agregar variantes y eliminar.
+- **Productos:** listado con foto, búsqueda y filtro por categoría, crear (con sus variantes), editar, ajustar el stock de cada variante, agregar variantes, **subir las imágenes de cada color** y eliminar.
 - **Categorías:** crear y eliminar (no se elimina una con productos).
 - **Comentarios:** ver todos y ocultarlos o volver a mostrarlos.
 - **Usuarios:** buscar, dar o quitar el rol de administrador y bloquear o desbloquear cuentas. No permite cambiar la propia cuenta.
@@ -68,7 +72,7 @@ Las acciones que no se deshacen con otro clic piden confirmación. `RequireAdmin
 
 ## Pendiente del backend
 
-Pantallas que hoy muestran un aviso o un estado vacío porque el backend todavía no expone lo necesario: pedidos y pago del carrito, recuperar contraseña, editar datos del perfil, editar o borrar comentarios propios, imágenes, descuentos y calificaciones de producto, y los filtros por marca y género.
+Pantallas que hoy muestran un aviso o un estado vacío porque el backend todavía no expone lo necesario: pedidos y pago del carrito, recuperar contraseña, editar datos del perfil, editar o borrar comentarios propios, descuentos y calificaciones de producto, y los filtros por marca y género.
 
 ## Despliegue
 

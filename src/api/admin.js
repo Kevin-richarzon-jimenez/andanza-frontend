@@ -51,3 +51,19 @@ export function setCommentVisibility(id, visible) {
 export function listAdminMessages(filters = {}) {
   return request('/admin/contact-messages', { query: filters })
 }
+
+// Las imágenes de un producto van por color. `image` y `thumbnail` son Blob WebP ya reducidos (ver utils/imageResize.js).
+export function uploadProductImage(productId, { color, image, thumbnail }) {
+  const form = new FormData()
+  form.append('image', image, 'image.webp')
+  form.append('thumbnail', thumbnail, 'thumbnail.webp')
+  return request(`/admin/products/${productId}/images`, { method: 'POST', query: { color }, body: form })
+}
+
+export function setProductImageCover(productId, imageId) {
+  return request(`/admin/products/${productId}/images/${imageId}/cover`, { method: 'PUT' })
+}
+
+export function deleteProductImage(productId, imageId) {
+  return request(`/admin/products/${productId}/images/${imageId}`, { method: 'DELETE' })
+}
