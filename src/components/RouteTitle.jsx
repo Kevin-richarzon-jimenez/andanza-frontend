@@ -25,7 +25,7 @@ const TITLES = {
 }
 
 function titleFor(pathname) {
-  if (pathname.startsWith('/admin')) return 'Administración'
+  if (pathname.startsWith('/admin')) return 'Gestión'
   if (pathname.startsWith('/account/addresses/')) return 'Editar dirección'
   return TITLES[pathname]
 }

@@ -13,7 +13,7 @@ function FieldError({ message }) {
   return message ? <div className="field-error" role="alert">{message}</div> : null
 }
 
-function ChangePassword() {
+function ChangePassword({ showTitle = true }) {
   const [status, setStatus] = useState({ type: 'idle', message: '', fields: {} })
   const formRef = useRef(null)
   const newPasswordRef = useRef(null)
@@ -49,7 +49,7 @@ function ChangePassword() {
 
   return (
     <>
-      <h1>Cambiar contraseña</h1>
+      {showTitle && <h1>Cambiar contraseña</h1>}
       <form className="narrow-form" ref={formRef} onSubmit={handleSubmit}>
         <div className="field-group">
           <label htmlFor="current-password">Contraseña actual</label>

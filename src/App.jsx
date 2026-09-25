@@ -42,6 +42,7 @@ const Categories = lazy(() => import('./pages/admin/Categories.jsx'))
 const AdminComments = lazy(() => import('./pages/admin/Comments.jsx'))
 const Users = lazy(() => import('./pages/admin/Users.jsx'))
 const Messages = lazy(() => import('./pages/admin/Messages.jsx'))
+const AdminProfile = lazy(() => import('./pages/admin/AdminProfile.jsx'))
 
 function App() {
   return (
@@ -66,17 +67,6 @@ function App() {
             <Route path="change-password" element={<ChangePassword />} />
           </Route>
 
-          <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
-            <Route index element={<Dashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="products/new" element={<ProductForm />} />
-            <Route path="products/:id/edit" element={<ProductForm />} />
-            <Route path="categories" element={<Categories />} />
-            <Route path="comments" element={<AdminComments />} />
-            <Route path="users" element={<Users />} />
-            <Route path="messages" element={<Messages />} />
-          </Route>
-
           <Route path="/info/about" element={<About />} />
           <Route path="/info/contact" element={<Contact />} />
           <Route path="/info/faq" element={<Faq />} />
@@ -86,6 +76,18 @@ function App() {
           <Route path="/info/terms" element={<Terms />} />
 
           <Route path="*" element={<NotFound />} />
+        </Route>
+
+        <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
+          <Route index element={<Dashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<ProductForm />} />
+          <Route path="products/:id/edit" element={<ProductForm />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="comments" element={<AdminComments />} />
+          <Route path="users" element={<Users />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="profile" element={<AdminProfile />} />
         </Route>
 
         <Route element={<AuthLayout />}>
