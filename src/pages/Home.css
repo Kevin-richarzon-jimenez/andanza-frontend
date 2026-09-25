@@ -5,36 +5,35 @@
   background: var(--bg-soft);
 }
 
+/* Fondo cálido: se ve mientras la foto carga y si no llega a cargar, y el velo y el texto se leen igual. */
 .hero .banner {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(60% 80% at 88% 15%, rgba(255, 75, 51, 0.14), transparent 60%),
-    radial-gradient(70% 90% at 0% 100%, rgba(20, 21, 28, 0.05), transparent 55%);
+  background: linear-gradient(110deg, #FFF8F0 0%, #FFE6CC 48%, #F4EADB 100%);
 }
 
-.hero .banner-tag {
+.hero .banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% 60%;
+}
+
+/* Velo cálido, blanco y naranja, del lado del texto: se disipa hacia la derecha y deja ver la bota.
+   Sin él, el título se perdería sobre el cielo de la foto. */
+.hero .banner::after {
+  content: '';
   position: absolute;
-  right: 24px;
-  bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  border: 1px solid rgba(20, 21, 28, 0.15);
-  border-radius: 20px;
-  color: var(--ink-soft);
-}
-
-.hero .banner-tag svg {
-  width: 15px;
-  height: 15px;
-  opacity: 0.8;
-}
-
-.hero .banner-tag span {
-  font-size: 0.72rem;
-  letter-spacing: 0.02em;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 249, 242, 0.97) 0%,
+    rgba(255, 246, 236, 0.92) 24%,
+    rgba(255, 222, 190, 0.62) 38%,
+    rgba(255, 196, 146, 0.22) 52%,
+    rgba(255, 190, 140, 0) 64%
+  );
 }
 
 .hero .content {
