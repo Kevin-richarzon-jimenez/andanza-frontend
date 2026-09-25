@@ -34,24 +34,50 @@ function firstAvailableSize(variants, color) {
   return (ofColor.find((variant) => variant.stock > 0) ?? ofColor[0])?.size ?? null
 }
 
+// Tres estados con su propio color e ícono: hay stock (verde), quedan pocas unidades (ámbar) o está agotada (rojo).
+// La cantidad exacta solo se muestra cuando quedan pocas: con mucho stock, "Disponible" basta.
 function StockNote({ variant }) {
   if (!variant) return null
+
+  let tone = 'ok'
+  let icon = (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  )
   let text = `Disponible en talla ${variant.size}`
+
   if (variant.stock === 0) {
+    tone = 'out'
+    icon = (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <path d="m15 9-6 6" />
+        <path d="m9 9 6 6" />
+      </>
+    )
     text = `Agotado en talla ${variant.size}`
   } else if (variant.stock <= LOW_STOCK) {
+    tone = 'low'
+    icon = (
+      <>
+        <path d="M10.27 2.82 1.66 20.03A2 2 0 0 0 3.42 23h17.15a2 2 0 0 0 1.76-2.97L13.73 2.82a2 2 0 0 0-3.46 0Z" />
+        <line x1="12" x2="12" y1="9" y2="13" />
+        <line x1="12" x2="12.01" y1="17" y2="17" />
+      </>
+    )
     text = (
       <>
         Quedan <strong>{variant.stock} {variant.stock === 1 ? 'unidad' : 'unidades'}</strong> disponibles en talla {variant.size}
       </>
     )
   }
+
   return (
-    <div className="stock-note">
+    <div className={`stock-note ${tone}`}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M10.27 2.82 1.66 20.03A2 2 0 0 0 3.42 23h17.15a2 2 0 0 0 1.76-2.97L13.73 2.82a2 2 0 0 0-3.46 0Z" />
-        <line x1="12" x2="12" y1="9" y2="13" />
-        <line x1="12" x2="12.01" y1="17" y2="17" />
+        {icon}
       </svg>
       <span>{text}</span>
     </div>
