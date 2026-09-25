@@ -135,13 +135,49 @@
   padding: 0;
 }
 
+.filter-apply {
+  width: 100%;
+  margin-top: 20px;
+  padding-block: 10px;
+}
+
+.filter-apply:disabled {
+  background: var(--line);
+  color: var(--ink-soft);
+  opacity: 1;
+}
+
+.filter-note {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.filter-retry {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.filter-skeleton .skeleton-line:nth-child(2) {
+  width: 70%;
+}
+
+.filter-skeleton .skeleton-line:nth-child(3) {
+  width: 85%;
+}
+
 .clear-filters {
   display: block;
   width: 100%;
   text-align: center;
   font-size: 0.78rem;
   color: var(--ink-soft);
-  margin-top: 18px;
+  margin-top: 12px;
   border: none;
   background: none;
   padding: 4px;

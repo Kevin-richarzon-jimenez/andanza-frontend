@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard.jsx'
+import { ProductCardSkeleton } from '../components/Skeleton.jsx'
 import { useApiData } from '../hooks/useApiData.js'
 import { listCategories, listProducts } from '../api/catalog.js'
 import { subscribeToNewsletter } from '../api/contact.js'
@@ -8,7 +9,7 @@ import './Home.css'
 
 function Home() {
   const [newsletter, setNewsletter] = useState({ status: 'idle', message: '' })
-  const { data: latest } = useApiData(() => listProducts({ sort: 'newest', size: 4 }), 'home-latest')
+  const { data: latest, error: latestError, reload: reloadLatest } = useApiData(() => listProducts({ sort: 'newest', size: 4 }), 'home-latest')
   const { data: categories } = useApiData(listCategories, 'categories')
 
   async function handleSubscribe(event) {
@@ -86,11 +87,18 @@ function Home() {
       </div>
 
       <h2 className="section-title">Novedades</h2>
-      <div className="product-grid">
-        {latest
-          ? latest.content.map((product) => <ProductCard key={product.id} product={product} />)
-          : <p className="page-status">Cargando productos...</p>}
-      </div>
+      {latestError ? (
+        <div className="page-status" role="alert">
+          <p>{latestError.message}</p>
+          <button type="button" className="btn btn-outline btn-small" onClick={reloadLatest}>Reintentar</button>
+        </div>
+      ) : (
+        <div className="product-grid">
+          {latest
+            ? latest.content.map((product) => <ProductCard key={product.id} product={product} />)
+            : Array.from({ length: 4 }, (_, index) => <ProductCardSkeleton key={index} />)}
+        </div>
+      )}
 
       {categories && categories.length > 0 && (
         <>

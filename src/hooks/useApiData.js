@@ -1,31 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 // Carga datos de la API y devuelve { data, error, loading, reload }.
-// "key" identifica la petición: cuando cambia, se vuelve a cargar. Mientras llega la nueva respuesta,
-// "data" conserva la anterior, así la pantalla no parpadea al cambiar de página o de filtros.
+// "key" identifica la petición: cuando cambia, se vuelve a cargar. Los datos quedan en caché: al volver a una
+// pantalla se muestran al instante y se actualizan por detrás. Mientras llega una respuesta nueva, "data"
+// conserva la anterior, así la pantalla no parpadea al cambiar de página o de filtros.
+// El "loader" recibe { signal } para cancelar la petición si ya no hace falta.
 export function useApiData(loader, key) {
-  const loaderRef = useRef(loader)
-  const [reloadCount, setReloadCount] = useState(0)
-  const [result, setResult] = useState({ requestKey: null, data: null, error: null })
-  const requestKey = `${key}#${reloadCount}`
-
-  useEffect(() => {
-    loaderRef.current = loader
+  const query = useQuery({
+    queryKey: [key],
+    queryFn: ({ signal }) => loader({ signal }),
+    placeholderData: keepPreviousData,
   })
 
-  useEffect(() => {
-    let cancelled = false
-    loaderRef.current()
-      .then((data) => { if (!cancelled) setResult({ requestKey, data, error: null }) })
-      .catch((error) => { if (!cancelled) setResult({ requestKey, data: null, error }) })
-    return () => { cancelled = true }
-  }, [requestKey])
-
-  const settled = result.requestKey === requestKey
   return {
-    data: result.data,
-    error: settled ? result.error : null,
-    loading: !settled,
-    reload: () => setReloadCount((count) => count + 1),
+    data: query.data ?? null,
+    error: query.error,
+    loading: query.isFetching,
+    reload: () => { query.refetch() },
   }
 }

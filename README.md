@@ -41,12 +41,16 @@ npm run lint
 - `main.jsx` — punto de entrada: monta `<App />` dentro de `<BrowserRouter>` y de los proveedores de sesión, favoritos y carrito.
 - `App.jsx` — define todas las rutas de la aplicación; las de `/account` exigen sesión.
 - `index.css` — reset, variables de diseño (colores, tipografía, espaciados) y estilos compartidos entre muchas páginas/componentes.
-- `api/` — un módulo por recurso del backend (`catalog`, `cart`, `favorites`, ...) sobre `client.js`, que agrega el token, normaliza los errores (`ApiError`) y maneja la sesión vencida.
+- `api/` — un módulo por recurso del backend (`catalog`, `cart`, `favorites`, ...) sobre `client.js`, que agrega el token, pone un límite de tiempo a cada petición, normaliza los errores (`ApiError`) y maneja la sesión vencida. `queryClient.js` configura la caché de consultas (TanStack Query) y los reintentos.
 - `auth/` — sesión (token y usuario en `sessionStorage`: sobrevive a recargar, se borra al cerrar la pestaña), `AuthProvider`, `RequireAuth` (páginas de `/account`), `RequireAdmin` (páginas de `/admin`) y `AuthPromptProvider`: para acciones que piden cuenta (favoritos, comentar) abre un popup con `useAuthPrompt().requireLogin(mensaje)` en vez de sacar al usuario de la página, y tras iniciar sesión o registrarse lo devuelve a donde estaba.
 - `confirm/` — `ConfirmProvider` y `useConfirm()`: `await confirm({ title, message, confirmLabel })` abre un diálogo y devuelve `true` o `false`. Se usa antes de las acciones que no se deshacen con otro clic: cerrar sesión, eliminar una dirección, quitar un producto del carrito y vaciarlo.
 - `cart/` y `favorites/` — estado global con su proveedor y su hook (`useCart`, `useFavorites`). El carrito vive en `localStorage`; los favoritos, en el backend.
-- `hooks/` y `utils/` — `useApiData` para cargar datos con estados de carga y error, `useListParams` para guardar filtros y página de un listado en la URL, y utilidades de formato (moneda, fecha, errores de formulario).
-- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AdminLayout`, `AuthLayout`, `ProductCard`, `Pagination`, `Stars`, `Review`, `ReviewSummary` (promedio y distribución de calificaciones), `EmptyState`, `Modal` (base de los diálogos: `AuthPromptDialog`, `ConfirmDialog`), `Select` (lista desplegable con el estilo de la página y navegación por teclado). Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
+- `hooks/` y `utils/` — `useApiData(loader, key)` para cargar datos (con caché: al volver a una pantalla se ve al instante y se actualiza por detrás; estados de carga y error), `useListParams` para guardar filtros y página de un listado en la URL, `useDebouncedValue`, `useDocumentTitle` y utilidades de formato (moneda, fecha, errores de formulario).
+- `components/` — piezas reutilizables: `Header`, `Footer`, `Layout`, `AccountLayout`, `AdminLayout`, `AuthLayout`, `ProductCard`, `Pagination`, `Stars`, `Review`, `ReviewSummary` (promedio y distribución de calificaciones), `EmptyState`, `Skeleton` (marcadores de carga), `ServerStatusBanner` (aviso de servidor despertando), `ScrollToTop` y `RouteTitle` (scroll y título de la pestaña al cambiar de ruta), `Modal` (base de los diálogos: `AuthPromptDialog`, `ConfirmDialog`), `Select` (lista desplegable con el estilo de la página y navegación por teclado). Los que tienen estilos propios llevan su CSS colocado al lado (`Header.jsx` + `Header.css`); el resto usa `index.css`.
+
+### Catálogo: filtros
+
+Categoría, precio, color y talla se marcan como un borrador y se aplican con **"Aplicar filtros"** (o Enter en los campos de precio): elegir varias opciones seguidas cuesta una sola consulta. Lo aplicado vive en la URL (se puede compartir y "atrás" vuelve al conjunto anterior). El orden sí cambia al instante.
 - `pages/` — una carpeta/archivo por pantalla (`Home`, `Catalog`, `ProductDetail`, `Cart`, y las subcarpetas `account/`, `admin/`, `auth/`, `info/`).
 
 ## Panel de administración
@@ -73,3 +77,12 @@ El frontend se despliega en [Vercel](https://vercel.com): se importa el reposito
 - **`VITE_API_URL`** (Settings → Environment Variables): la URL del backend con el prefijo de la API, por ejemplo `https://mi-backend.onrender.com/api/v1`. Vite la incorpora al construir, así que al cambiarla hay que volver a desplegar.
 - **`vercel.json`** reenvía todas las rutas a `index.html`. Sin esto, abrir directamente `/catalog` o `/products/...` daría 404, porque el enrutamiento lo hace React en el navegador.
 - El backend debe tener esta URL del frontend en su variable `CORS_ALLOWED_ORIGINS`; si no, el navegador bloquea las peticiones.
+
+### Servidor dormido
+
+El backend gratuito de Render se duerme tras unos 15 minutos sin tráfico y tarda en despertar: con su 0.1 CPU, Spring Boot tarda entre 1,5 y 3 minutos en arrancar (ver el README del backend). El frontend lo tiene en cuenta:
+
+- Al abrir la web hace una llamada a `/actuator/health` sin esperar respuesta, para que el servidor empiece a despertar mientras el visitante lee el Inicio.
+- Las consultas que fallan porque el servidor no responde (o contesta 502, 503 o 504) se reintentan con espera creciente (1, 2, 4, 8 y luego 10 s, hasta 22 veces, unos 3 minutos) y una barra avisa "Estamos despertando el servidor". Las peticiones que modifican datos no se reintentan solas.
+- Mientras llegan los datos se ven esqueletos con la forma de la página, y los filtros mantienen su lugar. Lo ya cargado queda en caché durante la sesión.
+- Para que no se duerma, un monitor externo puede llamar a `/actuator/health` cada 10 minutos (por ejemplo UptimeRobot, gratis).

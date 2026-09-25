@@ -2,9 +2,12 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../cart/useCart.js'
 import { useConfirm } from '../confirm/useConfirm.js'
 import { useApiData } from '../hooks/useApiData.js'
+import { useDebouncedValue } from '../hooks/useDebouncedValue.js'
 import { calculateTotals } from '../api/cart.js'
 import { formatCOP } from '../utils/formatCurrency.js'
 import './Cart.css'
+
+const TOTALS_DELAY_MS = 300
 
 function Cart() {
   const { items, setQuantity, remove, clear } = useCart()
@@ -33,11 +36,13 @@ function Cart() {
     if (confirmed) clear()
   }
 
-  // El backend recalcula precio, stock, descuento y envío con lo que hay en el carrito.
-  const totalsKey = items.map((item) => `${item.variantId}x${item.quantity}`).join(',')
+  // El backend recalcula precio, stock, descuento y envío con lo que hay en el carrito. Se espera un instante
+  // a que el usuario termine de tocar las cantidades para no pedir los totales en cada clic.
+  const settledItems = useDebouncedValue(items, TOTALS_DELAY_MS)
+  const totalsKey = settledItems.map((item) => `${item.variantId}x${item.quantity}`).join(',')
   const { data: totals, error } = useApiData(
-    () => (items.length > 0
-      ? calculateTotals(items.map(({ variantId, quantity }) => ({ variantId, quantity })))
+    () => (settledItems.length > 0
+      ? calculateTotals(settledItems.map(({ variantId, quantity }) => ({ variantId, quantity })))
       : Promise.resolve(null)),
     `totals:${totalsKey}`,
   )

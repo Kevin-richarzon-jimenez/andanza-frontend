@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth.js'
 import './AccountLayout.css'
@@ -41,7 +42,9 @@ function AdminLayout() {
       </aside>
 
       <div className="account-content">
-        <Outlet />
+        <Suspense fallback={<p className="page-status">Cargando...</p>}>
+          <Outlet />
+        </Suspense>
       </div>
     </main>
   )

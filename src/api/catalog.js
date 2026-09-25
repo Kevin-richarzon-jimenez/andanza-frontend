@@ -1,8 +1,8 @@
 import { request } from './client.js'
 
 // filters: { category, colors[], sizes[], minPrice, maxPrice, sort, search, page, size }
-export function listProducts(filters = {}) {
-  return request('/catalog/products', { query: filters })
+export function listProducts(filters = {}, { signal } = {}) {
+  return request('/catalog/products', { query: filters, signal })
 }
 
 export function getProduct(id) {
