@@ -6,6 +6,7 @@ import ReviewSummary from '../components/ReviewSummary.jsx'
 import ProductCard from '../components/ProductCard.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import { useApiData } from '../hooks/useApiData.js'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 import { useAuth } from '../auth/useAuth.js'
 import { useAuthPrompt } from '../auth/useAuthPrompt.js'
 import { useCart } from '../cart/useCart.js'
@@ -399,6 +400,7 @@ function ProductView({ product }) {
 function ProductDetail() {
   const { id } = useParams()
   const { data: product, error, reload } = useApiData(() => getProduct(id), `product:${id}`)
+  useDocumentTitle(product?.id === id ? product.name : null)
 
   if (error) {
     if (error.status === 404 || error.status === 400) {
